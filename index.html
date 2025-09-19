@@ -54,6 +54,7 @@
 
         <!-- Tab Navigation -->
         <div class="mb-6 flex flex-wrap justify-center border-b border-gray-200">
+            <button id="samplingstrategy-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Sampling Strategy</button>
             <button id="standardprep-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Standard Preparation</button>
             <button id="calibration-tab-btn" class="tab-button active text-lg font-semibold py-3 px-6 border-b-2">Instrument Calibration</button>
             <button id="lodloq-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">LOD & LOQ</button>
@@ -67,6 +68,11 @@
 
         <!-- Main Content Area -->
         <main id="main-content">
+            <!-- Sampling Strategy Section -->
+            <div id="samplingstrategy-section" class="experiment-section hidden">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+            
             <!-- Standard Preparation Section -->
             <div id="standardprep-section" class="experiment-section hidden">
                 <!-- Content will be dynamically loaded here -->
@@ -116,6 +122,7 @@
 
     <script>
         // Common elements
+        const samplingstrategyTabBtn = document.getElementById('samplingstrategy-tab-btn');
         const standardprepTabBtn = document.getElementById('standardprep-tab-btn');
         const calibrationTabBtn = document.getElementById('calibration-tab-btn');
         const lodloqTabBtn = document.getElementById('lodloq-tab-btn');
@@ -126,6 +133,7 @@
         const radiationTabBtn = document.getElementById('radiation-tab-btn');
         const noiseTabBtn = document.getElementById('noise-tab-btn');
         
+        const samplingstrategySection = document.getElementById('samplingstrategy-section');
         const standardprepSection = document.getElementById('standardprep-section');
         const calibrationSection = document.getElementById('calibration-section');
         const lodloqSection = document.getElementById('lodloq-section');
@@ -144,6 +152,7 @@
         let regressionParams = { calibration: {}, lodloq: {}, nitrate: {}, sulphate: {} };
 
         // Tab switching logic
+        samplingstrategyTabBtn.addEventListener('click', () => switchTab('samplingstrategy'));
         standardprepTabBtn.addEventListener('click', () => switchTab('standardprep'));
         calibrationTabBtn.addEventListener('click', () => switchTab('calibration'));
         lodloqTabBtn.addEventListener('click', () => switchTab('lodloq'));
@@ -155,7 +164,7 @@
         noiseTabBtn.addEventListener('click', () => switchTab('noise'));
 
         function switchTab(tab) {
-            const tabs = ['standardprep', 'calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
+            const tabs = ['samplingstrategy', 'standardprep', 'calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
             tabs.forEach(t => {
                 const tabBtn = document.getElementById(`${t}-tab-btn`);
                 const section = document.getElementById(`${t}-section`);
@@ -168,6 +177,76 @@
         
         // --- HTML Generation ---
 
+        function generateSamplingStrategyPanel(config) {
+            return `
+                <div class="bg-white p-6 rounded-xl border instrument-panel">
+                    <h3 class="font-semibold text-xl text-gray-700 mb-2">Effective Sample Size Calculator</h3>
+                    <p class="text-sm text-gray-500 mb-4">Determine the number of samples required for a statistically valid study using Cochran's formula.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Confidence Level</label>
+                            <select id="ss-confidence" class="mt-1 w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-400">
+                                <option value="1.645">90%</option>
+                                <option value="1.96" selected>95%</option>
+                                <option value="2.576">99%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                                Desired Margin of Error (e) 
+                                <span class="text-blue-500 font-bold cursor-help" title="Common values:&#10;0.05 (5%) for general research&#10;0.10 (10%) for pilot studies&#10;0.01 (1%) for high-precision work">ⓘ</span>
+                            </label>
+                            <input id="ss-margin-error" type="number" placeholder="e.g., 0.05 for 5%" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Estimated Standard Deviation (σ) or Proportion (p)</label>
+                            <input id="ss-std-dev" type="number" placeholder="Use 0.5 for proportion if unknown" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Population Size (N) <span class="text-xs text-gray-400">(Optional)</span></label>
+                            <input id="ss-population" type="number" placeholder="Leave blank for large populations" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                    </div>
+                    <button onclick="calculateSampleSize()" class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">Calculate Sample Size</button>
+                    <div id="samplesize-result-output" class="mt-4 text-center p-4 bg-gray-100 rounded-lg hidden">
+                        <p class="font-medium text-gray-600">Required Sample Size (n):</p>
+                        <p id="samplesize-result-text" class="text-2xl font-bold mt-1 text-gray-800"></p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border instrument-panel">
+                    <h3 class="font-semibold text-xl text-gray-700 mb-2">Sampling Error Calculator</h3>
+                    <p class="text-sm text-gray-500 mb-4">Calculate the margin of error for a given sample size to understand the precision of your results.</p>
+                    <div class="space-y-3">
+                        <div>
+                             <label class="block text-sm font-medium text-gray-700">Confidence Level</label>
+                            <select id="se-confidence" class="mt-1 w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-green-400">
+                                <option value="1.645">90%</option>
+                                <option value="1.96" selected>95%</option>
+                                <option value="2.576">99%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Sample Size (n)</label>
+                            <input id="se-sample-size" type="number" placeholder="e.g., 300" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Standard Deviation (σ) or Proportion (p)</label>
+                            <input id="se-std-dev" type="number" placeholder="Use 0.5 for proportion if unknown" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Population Size (N) <span class="text-xs text-gray-400">(Optional)</span></label>
+                            <input id="se-population" type="number" placeholder="Leave blank for large populations" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
+                        </div>
+                    </div>
+                     <button onclick="calculateSamplingError()" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition">Calculate Sampling Error</button>
+                     <div id="samplingerror-result-output" class="mt-4 text-center p-4 bg-gray-100 rounded-lg hidden">
+                        <p class="font-medium text-gray-600">Margin of Error (e):</p>
+                        <p id="samplingerror-result-text" class="text-2xl font-bold mt-1 text-gray-800"></p>
+                    </div>
+                </div>
+            `;
+        }
+        
         function generateStandardPrepPanel(config) {
             return `
                 <div class="bg-white p-6 rounded-xl border instrument-panel">
@@ -507,6 +586,7 @@
                 case 'calibration_check': rightPanelHTML = generateCalibrationCheckPanel(config); break;
                 case 'lod_loq_check': rightPanelHTML = generateLodLoqPanel(config); break;
                 case 'standard_prep': rightPanelHTML = generateStandardPrepPanel(config); break;
+                case 'sampling_strategy': rightPanelHTML = generateSamplingStrategyPanel(config); break;
                 default: rightPanelHTML = generateCalibrationPanel(config);
             }
             return `
@@ -532,6 +612,7 @@
         }
         
         // --- Experiment Configurations ---
+        const samplingStrategyConfig = { id: 'samplingstrategy', type: 'sampling_strategy', title: 'Sampling Strategy & Design', principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]};
         const standardPrepConfig = { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]};
         const calibrationConfig = { id: 'calibration', type: 'calibration_check', title: 'Instrument Calibration & R² Analysis', principle: 'A calibration curve is a graph that plots the known concentrations of a series of standard solutions against the response measured by an instrument. Linear regression is used to fit a straight line to these data points. The coefficient of determination, R-squared (R²), is a statistical measure of how close the data are to the fitted regression line. An R² value of 1 indicates that the regression predictions perfectly fit the data. For analytical chemistry, an R² value greater than 0.99 is typically required for a calibration to be considered valid.', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Prepare a series of at least five standard solutions with known concentrations.", "Measure the instrument's response for each standard solution and for a blank (zero concentration).", "Enter the concentration and the corresponding instrument response for each point.", "The application will automatically plot the data and perform a linear regression analysis.", "Evaluate the R-squared (R²) value. If R² is > 0.99, the calibration is acceptable. If not, the standards or measurements should be checked and repeated."] };
         const lodloqConfig = { id: 'lodloq', type: 'lod_loq_check', title: 'LOD & LOQ from Calibration Data', principle: 'The Limit of Detection (LOD) is the lowest concentration of an analyte that can be reliably distinguished from a blank. The Limit of Quantitation (LOQ) is the lowest concentration that can be measured with an acceptable level of precision and accuracy. They are commonly estimated from the calibration curve using the slope (m) and the standard deviation of the residuals (S_y/x).', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Generate a calibration curve using a series of standards, including a blank and several low-concentration standards near the expected detection limit.", "Enter the concentration and response data for all points.", "The tool calculates the slope (m) and the standard deviation of the residuals (S_y/x) from the regression line.", "LOD and LOQ are then calculated automatically using the formulas: LOD = 3.3 * (S_y/x / |m|) and LOQ = 10 * (S_y/x / |m|)."] };
@@ -541,11 +622,11 @@
         const macrodebrisConfig = { id: 'macrodebris', type: 'survey', title: 'Beach Macro-Debris Survey', principle: 'This method quantifies large debris on a beach by counting items within a defined area (transect). The results are expressed as number concentration (items per square meter), providing a standardized measure of pollution density.', categories: ['Plastics', 'Glass', 'Metal', 'Rubber', 'Cloth'], procedure: ["Define and measure the survey area (Area = Length × Width).", "Collect and sort all visible macro-debris into categories.", "Count the number of items in each category.", "Calculate the concentration for each category: Concentration = (Number of Items) / (Total Area).", "Record the final debris density results."]};
         const radiationConfig = { id: 'radiation', type: 'io_ratio', title: 'I/O Ratio: Natural Background Radiation', principle: 'This ratio compares indoor radiation levels to outdoor levels. A ratio > 1 suggests the presence of indoor radiation sources (e.g., building materials). A ratio < 1 suggests building materials provide shielding. The instrument used is a Geiger-Müller counter.', units: 'CPM', procedure: ["Take multiple readings outdoors in an open area and calculate the average. This is your outdoor background level.", "Take multiple readings indoors in the center of a room and calculate the average.", "Calculate the ratio: I/O Ratio = (Average Indoor Reading) / (Average Outdoor Reading).", "Interpret the result to assess indoor radiation exposure."] };
         const noiseConfig = { id: 'noise', type: 'io_ratio', title: 'I/O Ratio: Noise Pollution', principle: 'This ratio compares indoor vs. outdoor noise levels using a Sound Level Meter. A ratio < 1 indicates the building provides sound insulation. A ratio ≥ 1 suggests poor insulation or significant indoor noise sources. Note: Direct ratio of dB is a simplification for screening purposes.', units: 'dB', procedure: ["Measure the average outdoor noise level away from immediate sound sources.", "Measure the average indoor noise level in a room with windows and doors closed.", "Calculate the ratio: I/O Ratio = (Average Indoor dB) / (Average Outdoor dB).", "Analyze the ratio to evaluate the effectiveness of sound insulation."] };
-        const configs = { standardprep: standardPrepConfig, calibration: calibrationConfig, lodloq: lodloqConfig, nitrate: nitrateConfig, sulphate: sulphateConfig, tsp: tspConfig, macrodebris: macrodebrisConfig, radiation: radiationConfig, noise: noiseConfig };
+        const configs = { samplingstrategy: samplingStrategyConfig, standardprep: standardPrepConfig, calibration: calibrationConfig, lodloq: lodloqConfig, nitrate: nitrateConfig, sulphate: sulphateConfig, tsp: tspConfig, macrodebris: macrodebrisConfig, radiation: radiationConfig, noise: noiseConfig };
         
         // --- Core Logic ---
 
-        let currentSteps = { standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
+        let currentSteps = { samplingstrategy: 0, standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
 
         function navigateStep(id, direction) { /* ... unchanged ... */ }
         
@@ -861,6 +942,76 @@
             }
             resultOutput.classList.remove('hidden');
         }
+        
+        function calculateSampleSize() {
+            const z = parseFloat(document.getElementById('ss-confidence').value);
+            const e = parseFloat(document.getElementById('ss-margin-error').value);
+            let p = parseFloat(document.getElementById('ss-std-dev').value); // Can be proportion or std dev
+            const N = document.getElementById('ss-population').value ? parseFloat(document.getElementById('ss-population').value) : null;
+            
+            const resultOutput = document.getElementById('samplesize-result-output');
+            const resultText = document.getElementById('samplesize-result-text');
+
+            if (isNaN(z) || isNaN(e) || isNaN(p) || e <= 0 || p < 0 ) {
+                resultText.textContent = 'Invalid Input';
+                resultOutput.classList.remove('hidden');
+                return;
+            }
+
+            // If p > 1, assume it's std dev (σ), otherwise assume it's proportion
+            let n0;
+            if (p > 1) { // Cochran's formula for continuous data
+                n0 = (Math.pow(z, 2) * Math.pow(p, 2)) / Math.pow(e, 2);
+            } else { // Cochran's formula for proportions
+                 n0 = (Math.pow(z, 2) * p * (1 - p)) / Math.pow(e, 2);
+            }
+
+            let final_n = n0;
+            // Finite Population Correction
+            if (N && N > 0) {
+                final_n = n0 / (1 + ((n0 - 1) / N));
+            }
+
+            resultText.textContent = Math.ceil(final_n);
+            resultOutput.classList.remove('hidden');
+        }
+
+        function calculateSamplingError() {
+            const z = parseFloat(document.getElementById('se-confidence').value);
+            const n = parseFloat(document.getElementById('se-sample-size').value);
+            let p = parseFloat(document.getElementById('se-std-dev').value); // Can be proportion or std dev
+            const N = document.getElementById('se-population').value ? parseFloat(document.getElementById('se-population').value) : null;
+
+            const resultOutput = document.getElementById('samplingerror-result-output');
+            const resultText = document.getElementById('samplingerror-result-text');
+
+            if (isNaN(z) || isNaN(n) || isNaN(p) || n <= 0 || p < 0) {
+                resultText.textContent = 'Invalid Input';
+                resultOutput.classList.remove('hidden');
+                return;
+            }
+
+            let error;
+            let fpc = 1;
+            // Finite Population Correction
+            if (N && N > 0 && n < N) {
+                fpc = Math.sqrt((N - n) / (N - 1));
+            }
+
+            // If p > 1, assume it's std dev (σ), otherwise assume it's proportion
+            if (p > 1) { // Formula for continuous data
+                error = z * (p / Math.sqrt(n)) * fpc;
+            } else { // Formula for proportions
+                error = z * Math.sqrt((p * (1 - p)) / n) * fpc;
+            }
+            
+            resultText.textContent = `±${error.toFixed(4)}`;
+            if (p <= 1) {
+                 resultText.textContent += ` (or ${(error * 100).toFixed(2)}%)`;
+            }
+            resultOutput.classList.remove('hidden');
+        }
+
 
         function calculateDilution() {
             const c1 = parseFloat(document.getElementById('dilute-c1').value);
@@ -1105,6 +1256,7 @@
 
         // --- Initialization ---
         window.onload = () => {
+            samplingstrategySection.innerHTML = generateExperimentHTML(samplingStrategyConfig);
             standardprepSection.innerHTML = generateExperimentHTML(standardPrepConfig);
             calibrationSection.innerHTML = generateExperimentHTML(calibrationConfig);
             lodloqSection.innerHTML = generateExperimentHTML(lodloqConfig);
@@ -1134,7 +1286,7 @@
             }
             updateWeighingFormula();
 
-            switchTab('standardprep');
+            switchTab('samplingstrategy');
         };
 
         // --- Minimized Helper Functions ---
@@ -1146,5 +1298,7 @@
     </script>
 </body>
 </html>
+
+
 
 
