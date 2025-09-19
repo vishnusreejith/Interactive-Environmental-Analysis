@@ -594,10 +594,13 @@
                 </div>
             `;
         }
-
-        function generateSurveyPanel(config) { 
-             return ` <div class="bg-white p-6 rounded-xl border instrument-panel"> <h3 class="font-semibold text-xl text-gray-700 mb-4">Survey Area & Debris Count</h3> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label for="${config.id}-length-input" class="block text-sm font-medium text-gray-700">Transect Length (m)</label> <input id="${config.id}-length-input" type="number" value="100" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> <div> <label for="${config.id}-width-input" class="block text-sm font-medium text-gray-700">Transect Width (m)</label> <input id="${config.id}-width-input" type="number" value="20" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> </div> <p class="text-sm text-gray-600 mt-3 font-medium">Total Area: <span id="${config.id}-area-display">2000</span> m²</p> <hr class="my-4"> <p class="text-sm text-gray-500 mb-4">Enter the total count for each debris category found in the survey area.</p> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"> ${config.categories.map(name => ` <div> <label for="${config.id}-${name}-input" class="block text-sm font-medium text-gray-700">${name} (count)</label> <input id="${config.id}-${name}-input" type="number" placeholder="e.g., ${Math.floor(Math.random() * 200 + 40)}" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> `).join('')} </div> </div> <div class="bg-white p-6 rounded-xl border result-card text-white"> <h3 class="font-semibold text-xl mb-4">Result Calculation</h3> <button onclick="calculateResult('${config.id}')" class="w-full bg-white/30 hover:bg-white/40 font-bold py-3 px-4 rounded-lg transition">Calculate Debris Density</button> </div> <div class="bg-white p-6 rounded-xl border"> <h3 class="font-semibold text-xl text-gray-700 mb-2">Debris Density Results</h3> <div class="overflow-x-auto mb-4"> <table class="w-full text-sm text-left text-gray-500"> <thead class="text-xs text-gray-700 uppercase bg-gray-100"> <tr> <th scope="col" class="px-4 py-3">Debris Type</th> <th scope="col" class="px-4 py-3">Count</th> <th scope="col" class="px-4 py-3">Concentration (items/m²)</th> </tr> </thead> <tbody id="${config.id}-results-table"> <tr><td colspan="3" class="text-center py-4 text-gray-400">Results will appear here...</td></tr> </tbody> </table> </div> <div id="${config.id}-chart-container" class="relative h-64"><canvas id="${config.id}-chart"></canvas></div> <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div> </div> `; 
-        }
+        
+        // --- Minimized Helper Functions ---
+        function generateSurveyPanel(config) { return ` <div class="bg-white p-6 rounded-xl border instrument-panel"> <h3 class="font-semibold text-xl text-gray-700 mb-4">Survey Area & Debris Count</h3> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label for="${config.id}-length-input" class="block text-sm font-medium text-gray-700">Transect Length (m)</label> <input id="${config.id}-length-input" type="number" value="100" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> <div> <label for="${config.id}-width-input" class="block text-sm font-medium text-gray-700">Transect Width (m)</label> <input id="${config.id}-width-input" type="number" value="20" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> </div> <p class="text-sm text-gray-600 mt-3 font-medium">Total Area: <span id="${config.id}-area-display">2000</span> m²</p> <hr class="my-4"> <p class="text-sm text-gray-500 mb-4">Enter the total count for each debris category found in the survey area.</p> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"> ${config.categories.map(name => ` <div> <label for="${config.id}-${name}-input" class="block text-sm font-medium text-gray-700">${name} (count)</label> <input id="${config.id}-${name}-input" type="number" placeholder="e.g., ${Math.floor(Math.random() * 200 + 40)}" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> `).join('')} </div> </div> <div class="bg-white p-6 rounded-xl border result-card text-white"> <h3 class="font-semibold text-xl mb-4">Result Calculation</h3> <button onclick="calculateResult('${config.id}')" class="w-full bg-white/30 hover:bg-white/40 font-bold py-3 px-4 rounded-lg transition">Calculate Debris Density</button> </div> <div class="bg-white p-6 rounded-xl border"> <h3 class="font-semibold text-xl text-gray-700 mb-2">Debris Density Results</h3> <div class="overflow-x-auto mb-4"> <table class="w-full text-sm text-left text-gray-500"> <thead class="text-xs text-gray-700 uppercase bg-gray-100"> <tr> <th scope="col" class="px-4 py-3">Debris Type</th> <th scope="col" class="px-4 py-3">Count</th> <th scope="col" class="px-4 py-3">Concentration (items/m²)</th> </tr> </thead> <tbody id="${config.id}-results-table"> <tr><td colspan="3" class="text-center py-4 text-gray-400">Results will appear here...</td></tr> </tbody> </table> </div> <div id="${config.id}-chart-container" class="relative h-64"><canvas id="${config.id}-chart"></canvas></div> <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div> </div> `; }
+        function createSurveyChart(id) { const ctx = document.getElementById(`${id}-chart`).getContext('2d'); return new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [{ label: 'Concentration (items/m²)', data: [], backgroundColor: ['#34d399', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'items/m²' } } }, plugins: { legend: { display: false } } } }); }
+        function calculateCalibrationResult(id) { const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; const config = configs[id]; const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); let finalUnknownAbs = parseFloat(unknownAbsInput.value); if (config.method === 'dual_wavelength') { const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; finalUnknownAbs -= (2 * unknownAbs2); } else if (isNaN(finalUnknownAbs)) return; if (dataStore.length < 3) return; const { m, c } = regressionParams[id]; if (isNaN(m) || isNaN(c)) return; const concentration = (finalUnknownAbs - c) / m; document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; document.getElementById(`${id}-result-output`).classList.remove('hidden'); document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
+        function calculateMacroDebrisDensity(id) { const config = configs[id]; const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; const area = length * width; if (document.getElementById(`${id}-area-display`)) document.getElementById(`${id}-area-display`).textContent = area; if (area === 0) return; const results = []; config.categories.forEach(cat => { const count = parseInt(document.getElementById(`${id}-${cat}-input`).value) || 0; results.push({ category: cat, count: count, concentration: count / area }); }); const tableBody = document.getElementById(`${id}-results-table`); if(tableBody) tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join(''); if(macrodebrisChart) { macrodebrisChart.data.labels = results.map(r => r.category); macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); macrodebrisChart.update(); } if(document.getElementById(`${id}-download-btn`)) document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
+    
 
         function generateExperimentHTML(config) {
             let rightPanelHTML;
@@ -693,8 +696,6 @@
         // --- Core Logic ---
 
         let currentSteps = { samplingstrategy: 0, standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
-
-        function navigateStep(id, direction) { /* ... unchanged ... */ }
         
         function addDataPoint(id) {
             const config = configs[id];
@@ -1235,28 +1236,6 @@
             document.getElementById(`${id}-download-btn`).classList.remove('hidden');
         }
         
-        function calculateMacroDebrisDensity(id) { const config = configs[id]; const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; const area = length * width; if (document.getElementById(`${id}-area-display`)) document.getElementById(`${id}-area-display`).textContent = area; if (area === 0) return; const results = []; config.categories.forEach(cat => { const count = parseInt(document.getElementById(`${id}-${cat}-input`).value) || 0; results.push({ category: cat, count: count, concentration: count / area }); }); const tableBody = document.getElementById(`${id}-results-table`); if(tableBody) tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join(''); if(macrodebrisChart) { macrodebrisChart.data.labels = results.map(r => r.category); macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); macrodebrisChart.update(); } if(document.getElementById(`${id}-download-btn`)) document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
-
-        function calculateCalibrationResult(id) { 
-            const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; 
-            const config = configs[id]; 
-            const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); 
-            let finalUnknownAbs = parseFloat(unknownAbsInput.value); 
-            if (config.method === 'dual_wavelength') { 
-                const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); 
-                if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; 
-                finalUnknownAbs -= (2 * unknownAbs2); 
-            } else if (isNaN(finalUnknownAbs)) return; 
-            if (dataStore.length < 3) return; 
-            const { m, c } = regressionParams[id]; 
-            if (isNaN(m) || isNaN(c)) return; 
-            const concentration = (finalUnknownAbs - c) / m; 
-            document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; 
-            document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; 
-            document.getElementById(`${id}-result-output`).classList.remove('hidden'); 
-            document.getElementById(`${id}-download-btn`).classList.remove('hidden'); 
-        }
-        
         function downloadResults(id) {
             const config = configs[id];
             let fileContent = `--- Environmental Analysis Lab Results ---\n\nExperiment: ${config.title}\nDate: ${new Date().toLocaleString()}\n\n`;
@@ -1425,6 +1404,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
