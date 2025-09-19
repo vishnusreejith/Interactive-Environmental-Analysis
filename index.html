@@ -617,6 +617,12 @@
                             <h3 class="font-semibold text-lg text-gray-600">Principle:</h3>
                             <p class="text-gray-500 text-sm mt-1">${config.principle}</p>
                         </div>
+                        ${config.notes ? `
+                        <div class="mb-4">
+                            <h3 class="font-semibold text-lg text-gray-600">Note on Estimating Variability:</h3>
+                            <div class="text-gray-500 text-sm mt-1 space-y-3">${config.notes}</div>
+                        </div>
+                        ` : ''}
                         <h3 class="font-semibold text-lg text-gray-600 mb-2">Procedure:</h3>
                         <div id="${config.id}-procedure-stepper">
                             ${config.procedure.map((step, index) => `<div id="${config.id}-step-${index}" class="step-content ${index === 0 ? 'active' : ''}"><h3 class="font-semibold text-lg text-gray-600 mb-2">Step ${index + 1}</h3><p class="text-gray-700">${step}</p></div>`).join('')}
@@ -633,7 +639,44 @@
         }
         
         // --- Experiment Configurations ---
-        const samplingStrategyConfig = { id: 'samplingstrategy', type: 'sampling_strategy', title: 'Sampling Strategy & Design', principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]};
+        const samplingStrategyConfig = { 
+            id: 'samplingstrategy', 
+            type: 'sampling_strategy', 
+            title: 'Sampling Strategy & Design', 
+            principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', 
+            notes: `
+                <div>
+                    <h4 class="font-semibold text-gray-600">Step 1: Choose the Right Variability Metric</h4>
+                    <p class="mt-1">First, determine if your data is continuous or categorical.</p>
+                    <ul class="list-disc list-inside mt-1 pl-2">
+                        <li><strong>Standard Deviation (σ):</strong> Use this for continuous, numerical data (e.g., concentration of a chemical in mg/L, temperature in °C).</li>
+                        <li><strong>Proportion (p):</strong> Use this for categorical or binary data (e.g., presence/absence of a contaminant, whether a sample exceeds a legal limit, yes/no responses).</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-600">Step 2: Estimate the Standard Deviation (σ)</h4>
+                     <p class="mt-1">If you are working with continuous data, you need to estimate its variability. Here are common ways to do this:</p>
+                    <ul class="list-disc list-inside mt-1 pl-2">
+                        <li><strong>Use a Pilot Study:</strong> Collect a small preliminary set of samples (e.g., 20-30) and calculate their standard deviation using the calculator on the right. This is often the most reliable method.</li>
+                        <li><strong>Use Data from Previous Studies:</strong> Look for similar research conducted in your area or on a similar population and use the standard deviation they reported.</li>
+                        <li><strong>Use the Range Rule of Thumb:</strong> As a rough estimate when no data is available, you can use the formula: <strong>σ ≈ (Max Value - Min Value) / 4</strong>. For example, if you expect nitrate levels in a stream to range from 1 mg/L to 7 mg/L, the estimated σ would be (7 - 1) / 4 = 1.5 mg/L.</li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-gray-600">Step 3: Estimate the Proportion (p)</h4>
+                     <p class="mt-1">If your data is categorical, you need to estimate the proportion of the population that has a certain characteristic.</p>
+                    <ul class="list-disc list-inside mt-1 pl-2">
+                         <li><strong>Use Existing Data:</strong> If previous surveys exist, use their findings. For instance, if a prior study found that 20% of local wells were contaminated, you would use p = 0.20.</li>
+                        <li><strong>Use the Most Conservative Estimate:</strong> If you have absolutely no prior information, <strong>use p = 0.5</strong>. A proportion of 0.5 represents the maximum possible variability in the data. This will result in the largest required sample size, ensuring your study is robust enough to handle the worst-case scenario.</li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-gray-600">Step 4: Use the Calculators</h4>
+                     <p class="mt-1">Once you have your estimate for σ or p, enter it into the appropriate calculator along with your desired confidence level and margin of error. If you know the total population size (e.g., total number of drums at a waste site), entering it will apply a finite population correction, which can reduce the required sample size.</p>
+                </div>
+            `,
+            procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]
+        };
         const standardPrepConfig = { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]};
         const calibrationConfig = { id: 'calibration', type: 'calibration_check', title: 'Instrument Calibration & R² Analysis', principle: 'A calibration curve is a graph that plots the known concentrations of a series of standard solutions against the response measured by an instrument. Linear regression is used to fit a straight line to these data points. The coefficient of determination, R-squared (R²), is a statistical measure of how close the data are to the fitted regression line. An R² value of 1 indicates that the regression predictions perfectly fit the data. For analytical chemistry, an R² value greater than 0.99 is typically required for a calibration to be considered valid.', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Prepare a series of at least five standard solutions with known concentrations.", "Measure the instrument's response for each standard solution and for a blank (zero concentration).", "Enter the concentration and the corresponding instrument response for each point.", "The application will automatically plot the data and perform a linear regression analysis.", "Evaluate the R-squared (R²) value. If R² is > 0.99, the calibration is acceptable. If not, the standards or measurements should be checked and repeated."] };
         const lodloqConfig = { id: 'lodloq', type: 'lod_loq_check', title: 'LOD & LOQ from Calibration Data', principle: 'The Limit of Detection (LOD) is the lowest concentration of an analyte that can be reliably distinguished from a blank. The Limit of Quantitation (LOQ) is the lowest concentration that can be measured with an acceptable level of precision and accuracy. They are commonly estimated from the calibration curve using the slope (m) and the standard deviation of the residuals (S_y/x).', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Generate a calibration curve using a series of standards, including a blank and several low-concentration standards near the expected detection limit.", "Enter the concentration and response data for all points.", "The tool calculates the slope (m) and the standard deviation of the residuals (S_y/x) from the regression line.", "LOD and LOQ are then calculated automatically using the formulas: LOD = 3.3 * (S_y/x / |m|) and LOQ = 10 * (S_y/x / |m|)."] };
@@ -1360,5 +1403,8 @@
     </script>
 </body>
 </html>
+
+
+
 
 
