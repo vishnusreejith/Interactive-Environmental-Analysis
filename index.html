@@ -54,6 +54,7 @@
 
         <!-- Tab Navigation -->
         <div class="mb-6 flex flex-wrap justify-center border-b border-gray-200">
+            <button id="standardprep-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Standard Preparation</button>
             <button id="calibration-tab-btn" class="tab-button active text-lg font-semibold py-3 px-6 border-b-2">Instrument Calibration</button>
             <button id="lodloq-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">LOD & LOQ</button>
             <button id="nitrate-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Nitrate Estimation</button>
@@ -66,6 +67,11 @@
 
         <!-- Main Content Area -->
         <main id="main-content">
+            <!-- Standard Preparation Section -->
+            <div id="standardprep-section" class="experiment-section hidden">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+            
             <!-- Instrument Calibration Section -->
             <div id="calibration-section" class="experiment-section">
                 <!-- Content will be dynamically loaded here -->
@@ -110,6 +116,7 @@
 
     <script>
         // Common elements
+        const standardprepTabBtn = document.getElementById('standardprep-tab-btn');
         const calibrationTabBtn = document.getElementById('calibration-tab-btn');
         const lodloqTabBtn = document.getElementById('lodloq-tab-btn');
         const nitrateTabBtn = document.getElementById('nitrate-tab-btn');
@@ -119,6 +126,7 @@
         const radiationTabBtn = document.getElementById('radiation-tab-btn');
         const noiseTabBtn = document.getElementById('noise-tab-btn');
         
+        const standardprepSection = document.getElementById('standardprep-section');
         const calibrationSection = document.getElementById('calibration-section');
         const lodloqSection = document.getElementById('lodloq-section');
         const nitrateSection = document.getElementById('nitrate-section');
@@ -136,6 +144,7 @@
         let regressionParams = { calibration: {}, lodloq: {}, nitrate: {}, sulphate: {} };
 
         // Tab switching logic
+        standardprepTabBtn.addEventListener('click', () => switchTab('standardprep'));
         calibrationTabBtn.addEventListener('click', () => switchTab('calibration'));
         lodloqTabBtn.addEventListener('click', () => switchTab('lodloq'));
         nitrateTabBtn.addEventListener('click', () => switchTab('nitrate'));
@@ -146,7 +155,7 @@
         noiseTabBtn.addEventListener('click', () => switchTab('noise'));
 
         function switchTab(tab) {
-            const tabs = ['calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
+            const tabs = ['standardprep', 'calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
             tabs.forEach(t => {
                 const tabBtn = document.getElementById(`${t}-tab-btn`);
                 const section = document.getElementById(`${t}-section`);
@@ -158,6 +167,72 @@
         }
         
         // --- HTML Generation ---
+
+        function generateStandardPrepPanel(config) {
+            return `
+                <div class="bg-white p-6 rounded-xl border instrument-panel">
+                    <h3 class="font-semibold text-xl text-gray-700 mb-2">Preparation by Weighing a Solid</h3>
+                    <p class="text-sm text-gray-500 mb-4">Calculate the mass of a solid chemical required to prepare a stock solution of a specific concentration and volume.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Molar Mass (g/mol)</label>
+                            <input id="weigh-molar-mass" type="number" placeholder="e.g., 58.44 for NaCl" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Desired Concentration</label>
+                            <div class="flex gap-2 mt-1">
+                                <input id="weigh-concentration" type="number" placeholder="e.g., 0.1" class="w-2/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                                <select id="weigh-concentration-unit" class="w-1/3 p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-400">
+                                    <option value="M">M (mol/L)</option>
+                                    <option value="N">N (Normality)</option>
+                                    <option value="ppm">ppm (mg/L)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="weigh-equivalence-factor-container" class="hidden">
+                             <label class="block text-sm font-medium text-gray-700">Equivalence Factor (n)</label>
+                             <input id="weigh-equivalence-factor" type="number" placeholder="e.g., 1 for HCl, 2 for H₂SO₄" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Final Volume (mL)</label>
+                            <input id="weigh-volume" type="number" placeholder="e.g., 1000" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-100 rounded-lg border">
+                         <p id="weighing-formula-display" class="text-sm text-center text-gray-600 font-mono"></p>
+                    </div>
+                    <button onclick="calculateWeighing()" class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">Calculate Mass</button>
+                    <div id="weighing-result-output" class="mt-4 text-center p-4 bg-gray-100 rounded-lg hidden">
+                        <p class="font-medium text-gray-600">Required Mass:</p>
+                        <p id="weighing-result-text" class="text-2xl font-bold mt-1 text-gray-800"></p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border instrument-panel">
+                    <h3 class="font-semibold text-xl text-gray-700 mb-2">Preparation by Dilution (C₁V₁ = C₂V₂)</h3>
+                    <p class="text-sm text-gray-500 mb-4">Calculate the volume of a stock solution needed to prepare a diluted standard. Ensure all units are consistent.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Stock Concentration (C₁)</label>
+                            <input id="dilute-c1" type="number" placeholder="e.g., 1000" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Desired Final Concentration (C₂)</label>
+                            <input id="dilute-c2" type="number" placeholder="e.g., 50" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Desired Final Volume (V₂)</label>
+                            <input id="dilute-v2" type="number" placeholder="e.g., 250" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400">
+                        </div>
+                    </div>
+                     <button onclick="calculateDilution()" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition">Calculate Volume</button>
+                     <div id="dilution-result-output" class="mt-4 text-center p-4 bg-gray-100 rounded-lg hidden">
+                        <p class="font-medium text-gray-600">Volume of Stock Solution to Pipette (V₁):</p>
+                        <p id="dilution-result-text" class="text-2xl font-bold mt-1 text-gray-800"></p>
+                        <p class="text-xs mt-2 text-gray-500">Formula: V₁ = (C₂ × V₂) / C₁</p>
+                    </div>
+                </div>
+            `;
+        }
 
         function generateLodLoqPanel(config) {
             return `
@@ -189,43 +264,43 @@
                  <div class="bg-white p-6 rounded-xl border result-card text-white lg:col-span-2">
                      <h3 class="font-semibold text-xl mb-4">Detection Limit Calculation</h3>
                      <div class="p-4 bg-white/20 rounded-lg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mb-4">
-                            <div>
-                                <p class="font-medium">R-Squared (R²)</p>
-                                <p id="${config.id}-rsquared-text" class="text-2xl font-bold mt-1">-</p>
-                            </div>
-                            <div>
-                                <p class="font-medium">Linearity Check</p>
-                                <p id="${config.id}-interpretation-text" class="text-md font-bold mt-2 h-10 flex items-center justify-center">-</p>
-                            </div>
-                        </div>
-                        <hr class="border-white/30 my-2">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mt-4">
-                            <div>
-                                <p class="font-medium">Slope (m)</p>
-                                <p id="${config.id}-slope-text" class="text-2xl font-bold mt-1">-</p>
-                            </div>
-                            <div>
-                                <p class="font-medium">Std. Dev. of Residuals (S_y/x)</p>
-                                <p id="${config.id}-sd-text" class="text-2xl font-bold mt-1">-</p>
-                            </div>
-                        </div>
-                        <hr class="border-white/30 my-4">
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
-                            <div>
-                                <p class="font-medium">Limit of Detection (LOD)</p>
-                                <p id="${config.id}-lod-text" class="text-2xl font-bold mt-1">-</p>
-                                <p class="text-xs mt-1 opacity-80">LOD = 3.3 * (S_y/x / |m|)</p>
-                            </div>
-                            <div>
-                                <p class="font-medium">Limit of Quantitation (LOQ)</p>
-                                <p id="${config.id}-loq-text" class="text-2xl font-bold mt-1">-</p>
-                                <p class="text-xs mt-1 opacity-80">LOQ = 10 * (S_y/x / |m|)</p>
-                            </div>
-                        </div>
-                    </div>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mb-4">
+                             <div>
+                                 <p class="font-medium">R-Squared (R²)</p>
+                                 <p id="${config.id}-rsquared-text" class="text-2xl font-bold mt-1">-</p>
+                             </div>
+                             <div>
+                                 <p class="font-medium">Linearity Check</p>
+                                 <p id="${config.id}-interpretation-text" class="text-md font-bold mt-2 h-10 flex items-center justify-center">-</p>
+                             </div>
+                         </div>
+                         <hr class="border-white/30 my-2">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mt-4">
+                             <div>
+                                 <p class="font-medium">Slope (m)</p>
+                                 <p id="${config.id}-slope-text" class="text-2xl font-bold mt-1">-</p>
+                             </div>
+                             <div>
+                                 <p class="font-medium">Std. Dev. of Residuals (S_y/x)</p>
+                                 <p id="${config.id}-sd-text" class="text-2xl font-bold mt-1">-</p>
+                             </div>
+                         </div>
+                         <hr class="border-white/30 my-4">
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                             <div>
+                                 <p class="font-medium">Limit of Detection (LOD)</p>
+                                 <p id="${config.id}-lod-text" class="text-2xl font-bold mt-1">-</p>
+                                 <p class="text-xs mt-1 opacity-80">LOD = 3.3 * (S_y/x / |m|)</p>
+                             </div>
+                             <div>
+                                 <p class="font-medium">Limit of Quantitation (LOQ)</p>
+                                 <p id="${config.id}-loq-text" class="text-2xl font-bold mt-1">-</p>
+                                 <p class="text-xs mt-1 opacity-80">LOQ = 10 * (S_y/x / |m|)</p>
+                             </div>
+                         </div>
+                     </div>
                      <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div>
-                </div>
+                 </div>
             `;
         }
 
@@ -259,22 +334,22 @@
                 <div class="bg-white p-6 rounded-xl border result-card text-white lg:col-span-2">
                      <h3 class="font-semibold text-xl mb-4">Regression Analysis</h3>
                      <div id="${config.id}-result-output" class="text-center p-4 bg-white/20 rounded-lg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <p class="font-medium">Regression Equation</p>
-                                <p id="${config.id}-equation-text" class="text-2xl font-bold mt-1">-</p>
-                            </div>
-                            <div>
-                                <p class="font-medium">R-Squared (R²)</p>
-                                <p id="${config.id}-rsquared-text" class="text-2xl font-bold mt-1">-</p>
-                            </div>
-                        </div>
-                        <p id="${config.id}-interpretation-text" class="text-sm mt-3 font-medium h-4"></p>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div>
+                                 <p class="font-medium">Regression Equation</p>
+                                 <p id="${config.id}-equation-text" class="text-2xl font-bold mt-1">-</p>
+                             </div>
+                             <div>
+                                 <p class="font-medium">R-Squared (R²)</p>
+                                 <p id="${config.id}-rsquared-text" class="text-2xl font-bold mt-1">-</p>
+                             </div>
+                         </div>
+                         <p id="${config.id}-interpretation-text" class="text-sm mt-3 font-medium h-4"></p>
                     </div>
                      <div class="mt-4 text-xs text-white/80 bg-white/10 p-3 rounded-lg">
-                        <p class="font-semibold mb-1">How R² is Computed:</p>
-                        <p>R² = 1 - (SSres / SStot)</p>
-                        <p class="mt-1">Where <strong>SSres</strong> is the sum of the squared differences between actual and predicted values (residuals), and <strong>SStot</strong> is the sum of squared differences between actual values and their mean. It measures the proportion of variance in the dependent variable that is predictable from the independent variable.</p>
+                         <p class="font-semibold mb-1">How R² is Computed:</p>
+                         <p>R² = 1 - (SSres / SStot)</p>
+                         <p class="mt-1">Where <strong>SSres</strong> is the sum of the squared differences between actual and predicted values (residuals), and <strong>SStot</strong> is the sum of squared differences between actual values and their mean. It measures the proportion of variance in the dependent variable that is predictable from the independent variable.</p>
                      </div>
                      <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div>
                 </div>
@@ -371,12 +446,12 @@
                     <div id="${config.id}-result-output" class="mt-4 text-center p-4 bg-white/20 rounded-lg hidden">
                         <div class="grid grid-cols-2 gap-2 mb-3">
                              <div>
-                                <p class="text-sm font-medium">Particulate Mass</p>
-                                <p id="${config.id}-mass-text" class="text-xl font-bold"></p>
+                                 <p class="text-sm font-medium">Particulate Mass</p>
+                                 <p id="${config.id}-mass-text" class="text-xl font-bold"></p>
                             </div>
                             <div>
-                                <p class="text-sm font-medium">Air Volume Sampled</p>
-                                <p id="${config.id}-volume-text" class="text-xl font-bold"></p>
+                                 <p class="text-sm font-medium">Air Volume Sampled</p>
+                                 <p id="${config.id}-volume-text" class="text-xl font-bold"></p>
                             </div>
                         </div>
                         <hr class="border-white/30 my-2">
@@ -431,6 +506,7 @@
                 case 'gravimetric': rightPanelHTML = generateGravimetricPanel(config); break;
                 case 'calibration_check': rightPanelHTML = generateCalibrationCheckPanel(config); break;
                 case 'lod_loq_check': rightPanelHTML = generateLodLoqPanel(config); break;
+                case 'standard_prep': rightPanelHTML = generateStandardPrepPanel(config); break;
                 default: rightPanelHTML = generateCalibrationPanel(config);
             }
             return `
@@ -456,6 +532,7 @@
         }
         
         // --- Experiment Configurations ---
+        const standardPrepConfig = { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]};
         const calibrationConfig = { id: 'calibration', type: 'calibration_check', title: 'Instrument Calibration & R² Analysis', principle: 'A calibration curve is a graph that plots the known concentrations of a series of standard solutions against the response measured by an instrument. Linear regression is used to fit a straight line to these data points. The coefficient of determination, R-squared (R²), is a statistical measure of how close the data are to the fitted regression line. An R² value of 1 indicates that the regression predictions perfectly fit the data. For analytical chemistry, an R² value greater than 0.99 is typically required for a calibration to be considered valid.', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Prepare a series of at least five standard solutions with known concentrations.", "Measure the instrument's response for each standard solution and for a blank (zero concentration).", "Enter the concentration and the corresponding instrument response for each point.", "The application will automatically plot the data and perform a linear regression analysis.", "Evaluate the R-squared (R²) value. If R² is > 0.99, the calibration is acceptable. If not, the standards or measurements should be checked and repeated."] };
         const lodloqConfig = { id: 'lodloq', type: 'lod_loq_check', title: 'LOD & LOQ from Calibration Data', principle: 'The Limit of Detection (LOD) is the lowest concentration of an analyte that can be reliably distinguished from a blank. The Limit of Quantitation (LOQ) is the lowest concentration that can be measured with an acceptable level of precision and accuracy. They are commonly estimated from the calibration curve using the slope (m) and the standard deviation of the residuals (S_y/x).', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Generate a calibration curve using a series of standards, including a blank and several low-concentration standards near the expected detection limit.", "Enter the concentration and response data for all points.", "The tool calculates the slope (m) and the standard deviation of the residuals (S_y/x) from the regression line.", "LOD and LOQ are then calculated automatically using the formulas: LOD = 3.3 * (S_y/x / |m|) and LOQ = 10 * (S_y/x / |m|)."] };
         const nitrateConfig = { id: 'nitrate', type: 'calibration', method: 'dual_wavelength', title: 'Estimation of Nitrate (Direct UV Screening Method)', principle: 'Nitrate ions absorb ultraviolet light at 220 nm. Since dissolved organic matter may also absorb at this wavelength, a second measurement is taken at 275 nm to correct for this interference. The final absorbance is calculated as A₂₂₀nm - (2 * A₂₇₅nm), which is proportional to the nitrate concentration.', units: 'mg/L', procedure: ["Prepare a series of standard nitrate solutions (e.g., 0-10 mg/L).", "Measure the absorbance of each solution at 220 nm and 275 nm.", "Calculate the corrected absorbance: Abs_corr = Abs_220nm - (2 * Abs_275nm).", "Plot a calibration curve of corrected absorbance vs. concentration.", "Determine the concentration of the unknown sample from the curve."] };
@@ -464,11 +541,11 @@
         const macrodebrisConfig = { id: 'macrodebris', type: 'survey', title: 'Beach Macro-Debris Survey', principle: 'This method quantifies large debris on a beach by counting items within a defined area (transect). The results are expressed as number concentration (items per square meter), providing a standardized measure of pollution density.', categories: ['Plastics', 'Glass', 'Metal', 'Rubber', 'Cloth'], procedure: ["Define and measure the survey area (Area = Length × Width).", "Collect and sort all visible macro-debris into categories.", "Count the number of items in each category.", "Calculate the concentration for each category: Concentration = (Number of Items) / (Total Area).", "Record the final debris density results."]};
         const radiationConfig = { id: 'radiation', type: 'io_ratio', title: 'I/O Ratio: Natural Background Radiation', principle: 'This ratio compares indoor radiation levels to outdoor levels. A ratio > 1 suggests the presence of indoor radiation sources (e.g., building materials). A ratio < 1 suggests building materials provide shielding. The instrument used is a Geiger-Müller counter.', units: 'CPM', procedure: ["Take multiple readings outdoors in an open area and calculate the average. This is your outdoor background level.", "Take multiple readings indoors in the center of a room and calculate the average.", "Calculate the ratio: I/O Ratio = (Average Indoor Reading) / (Average Outdoor Reading).", "Interpret the result to assess indoor radiation exposure."] };
         const noiseConfig = { id: 'noise', type: 'io_ratio', title: 'I/O Ratio: Noise Pollution', principle: 'This ratio compares indoor vs. outdoor noise levels using a Sound Level Meter. A ratio < 1 indicates the building provides sound insulation. A ratio ≥ 1 suggests poor insulation or significant indoor noise sources. Note: Direct ratio of dB is a simplification for screening purposes.', units: 'dB', procedure: ["Measure the average outdoor noise level away from immediate sound sources.", "Measure the average indoor noise level in a room with windows and doors closed.", "Calculate the ratio: I/O Ratio = (Average Indoor dB) / (Average Outdoor dB).", "Analyze the ratio to evaluate the effectiveness of sound insulation."] };
-        const configs = { calibration: calibrationConfig, lodloq: lodloqConfig, nitrate: nitrateConfig, sulphate: sulphateConfig, tsp: tspConfig, macrodebris: macrodebrisConfig, radiation: radiationConfig, noise: noiseConfig };
+        const configs = { standardprep: standardPrepConfig, calibration: calibrationConfig, lodloq: lodloqConfig, nitrate: nitrateConfig, sulphate: sulphateConfig, tsp: tspConfig, macrodebris: macrodebrisConfig, radiation: radiationConfig, noise: noiseConfig };
         
         // --- Core Logic ---
 
-        let currentSteps = { calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
+        let currentSteps = { standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
 
         function navigateStep(id, direction) { /* ... unchanged ... */ }
         
@@ -718,6 +795,92 @@
         }
 
         // --- Calculations ---
+
+        function updateWeighingFormula() {
+            const unit = document.getElementById('weigh-concentration-unit').value;
+            const formulaDisplay = document.getElementById('weighing-formula-display');
+            const equivalenceFactorContainer = document.getElementById('weigh-equivalence-factor-container');
+
+            if (!formulaDisplay || !equivalenceFactorContainer) return;
+
+            if (unit === 'M') {
+                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = Conc (mol/L) &times; Vol (L) &times; Molar Mass';
+                equivalenceFactorContainer.classList.add('hidden');
+            } else if (unit === 'N') {
+                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = (Normality / n) &times; Vol (L) &times; Molar Mass';
+                equivalenceFactorContainer.classList.remove('hidden');
+            } else if (unit === 'ppm') {
+                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = [ppm (mg/L) &times; Vol (L)] / 1000';
+                equivalenceFactorContainer.classList.add('hidden');
+            }
+        }
+
+        function calculateWeighing() {
+            const molarMass = parseFloat(document.getElementById('weigh-molar-mass').value);
+            const concentration = parseFloat(document.getElementById('weigh-concentration').value);
+            const volumeMl = parseFloat(document.getElementById('weigh-volume').value);
+            const unit = document.getElementById('weigh-concentration-unit').value;
+            const equivalenceFactor = parseFloat(document.getElementById('weigh-equivalence-factor').value);
+            
+            const resultOutput = document.getElementById('weighing-result-output');
+            const resultText = document.getElementById('weighing-result-text');
+
+            if (isNaN(concentration) || isNaN(volumeMl) || volumeMl <= 0 || concentration < 0) {
+                 resultText.textContent = 'Invalid Input';
+                 resultOutput.classList.remove('hidden');
+                 return;
+            }
+
+            let mass = NaN;
+            const volumeL = volumeMl / 1000;
+
+            if (unit === 'M') {
+                if (isNaN(molarMass) || molarMass <= 0) {
+                     resultText.textContent = 'Invalid Molar Mass';
+                     resultOutput.classList.remove('hidden');
+                     return;
+                }
+                mass = concentration * volumeL * molarMass;
+            } else if (unit === 'N') {
+                 if (isNaN(molarMass) || isNaN(equivalenceFactor) || molarMass <= 0 || equivalenceFactor <= 0) {
+                     resultText.textContent = 'Invalid Molar Mass or Equiv. Factor';
+                     resultOutput.classList.remove('hidden');
+                     return;
+                 }
+                const molarity = concentration / equivalenceFactor;
+                mass = molarity * volumeL * molarMass;
+            } else if (unit === 'ppm') {
+                // ppm = mg/L. mass (mg) = ppm * volume (L). mass (g) = (ppm * volume (L))/1000
+                mass = (concentration * volumeL) / 1000;
+            }
+
+            if (isNaN(mass)) {
+                resultText.textContent = 'Calculation Error';
+            } else {
+                resultText.textContent = `${mass.toFixed(4)} g`;
+            }
+            resultOutput.classList.remove('hidden');
+        }
+
+        function calculateDilution() {
+            const c1 = parseFloat(document.getElementById('dilute-c1').value);
+            const c2 = parseFloat(document.getElementById('dilute-c2').value);
+            const v2 = parseFloat(document.getElementById('dilute-v2').value);
+            const resultOutput = document.getElementById('dilution-result-output');
+            const resultText = document.getElementById('dilution-result-text');
+
+            if (isNaN(c1) || isNaN(c2) || isNaN(v2) || c1 <= 0 || c2 < 0 || v2 <= 0 || c2 > c1) {
+                resultText.textContent = 'Invalid Input';
+                 if (c2 > c1) resultText.textContent = "Final conc. > stock conc.";
+                resultOutput.classList.remove('hidden');
+                return;
+            }
+
+            const v1 = (c2 * v2) / c1;
+            resultText.textContent = `${v1.toFixed(3)} units of volume`;
+            resultOutput.classList.remove('hidden');
+        }
+        
         function calculateLinearRegression(id) { 
             let dataStore;
             if (id === 'nitrate') dataStore = nitrateData;
@@ -738,7 +901,7 @@
             
             const meanY = sumY / n;
             const ssTot = dataStore.reduce((acc, p) => acc + Math.pow(p.y - meanY, 2), 0);
-            const rSquared = 1 - (sumOfSquaresOfResiduals / ssTot);
+            const rSquared = ssTot === 0 ? 1 : 1 - (sumOfSquaresOfResiduals / ssTot);
 
             return { m, c, syx, rSquared }; 
         }
@@ -839,11 +1002,11 @@
                     fileContent += `Slope (m): ${m.toFixed(4)}\n`;
                     fileContent += `Standard Deviation of Residuals (S_y/x): ${syx.toFixed(4)}\n\n`;
                      if (rSquared >= 0.99) {
-                        fileContent += `Limit of Detection (LOD): ${document.getElementById('lodloq-lod-text').textContent}\n`;
-                        fileContent += `Limit of Quantitation (LOQ): ${document.getElementById('lodloq-loq-text').textContent}\n`;
-                    } else {
-                        fileContent += `LOD/LOQ not estimated due to poor linearity.\n`;
-                    }
+                         fileContent += `Limit of Detection (LOD): ${document.getElementById('lodloq-lod-text').textContent}\n`;
+                         fileContent += `Limit of Quantitation (LOQ): ${document.getElementById('lodloq-loq-text').textContent}\n`;
+                     } else {
+                         fileContent += `LOD/LOQ not estimated due to poor linearity.\n`;
+                     }
                 } else {
                     fileContent += `Analysis not performed (not enough data points).\n`;
                 }
@@ -942,6 +1105,7 @@
 
         // --- Initialization ---
         window.onload = () => {
+            standardprepSection.innerHTML = generateExperimentHTML(standardPrepConfig);
             calibrationSection.innerHTML = generateExperimentHTML(calibrationConfig);
             lodloqSection.innerHTML = generateExperimentHTML(lodloqConfig);
             nitrateSection.innerHTML = generateExperimentHTML(nitrateConfig);
@@ -964,8 +1128,13 @@
             macroLength.addEventListener('input', updateArea);
             macroWidth.addEventListener('input', updateArea);
             
-            switchTab('calibration');
-            document.getElementById('calibration-conc-input').focus();
+            const concentrationUnitSelector = document.getElementById('weigh-concentration-unit');
+            if (concentrationUnitSelector) {
+                concentrationUnitSelector.addEventListener('change', updateWeighingFormula);
+            }
+            updateWeighingFormula();
+
+            switchTab('standardprep');
         };
 
         // --- Minimized Helper Functions ---
@@ -977,3 +1146,5 @@
     </script>
 </body>
 </html>
+
+
