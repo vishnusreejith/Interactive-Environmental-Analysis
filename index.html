@@ -56,7 +56,7 @@
         <div class="mb-6 flex flex-wrap justify-center border-b border-gray-200">
             <button id="samplingstrategy-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Sampling Strategy</button>
             <button id="standardprep-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Standard Preparation</button>
-            <button id="calibration-tab-btn" class="tab-button active text-lg font-semibold py-3 px-6 border-b-2">Instrument Calibration</button>
+            <button id="calibration-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Instrument Calibration</button>
             <button id="lodloq-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">LOD & LOQ</button>
             <button id="nitrate-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Nitrate Estimation</button>
             <button id="sulphate-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Sulphate Estimation</button>
@@ -79,7 +79,7 @@
             </div>
             
             <!-- Instrument Calibration Section -->
-            <div id="calibration-section" class="experiment-section">
+            <div id="calibration-section" class="experiment-section hidden">
                 <!-- Content will be dynamically loaded here -->
             </div>
 
@@ -594,13 +594,10 @@
                 </div>
             `;
         }
-        
-        // --- Minimized Helper Functions ---
-        function generateSurveyPanel(config) { return ` <div class="bg-white p-6 rounded-xl border instrument-panel"> <h3 class="font-semibold text-xl text-gray-700 mb-4">Survey Area & Debris Count</h3> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label for="${config.id}-length-input" class="block text-sm font-medium text-gray-700">Transect Length (m)</label> <input id="${config.id}-length-input" type="number" value="100" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> <div> <label for="${config.id}-width-input" class="block text-sm font-medium text-gray-700">Transect Width (m)</label> <input id="${config.id}-width-input" type="number" value="20" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> </div> <p class="text-sm text-gray-600 mt-3 font-medium">Total Area: <span id="${config.id}-area-display">2000</span> m²</p> <hr class="my-4"> <p class="text-sm text-gray-500 mb-4">Enter the total count for each debris category found in the survey area.</p> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"> ${config.categories.map(name => ` <div> <label for="${config.id}-${name}-input" class="block text-sm font-medium text-gray-700">${name} (count)</label> <input id="${config.id}-${name}-input" type="number" placeholder="e.g., ${Math.floor(Math.random() * 200 + 40)}" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> `).join('')} </div> </div> <div class="bg-white p-6 rounded-xl border result-card text-white"> <h3 class="font-semibold text-xl mb-4">Result Calculation</h3> <button onclick="calculateResult('${config.id}')" class="w-full bg-white/30 hover:bg-white/40 font-bold py-3 px-4 rounded-lg transition">Calculate Debris Density</button> </div> <div class="bg-white p-6 rounded-xl border"> <h3 class="font-semibold text-xl text-gray-700 mb-2">Debris Density Results</h3> <div class="overflow-x-auto mb-4"> <table class="w-full text-sm text-left text-gray-500"> <thead class="text-xs text-gray-700 uppercase bg-gray-100"> <tr> <th scope="col" class="px-4 py-3">Debris Type</th> <th scope="col" class="px-4 py-3">Count</th> <th scope="col" class="px-4 py-3">Concentration (items/m²)</th> </tr> </thead> <tbody id="${config.id}-results-table"> <tr><td colspan="3" class="text-center py-4 text-gray-400">Results will appear here...</td></tr> </tbody> </table> </div> <div id="${config.id}-chart-container" class="relative h-64"><canvas id="${config.id}-chart"></canvas></div> <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div> </div> `; }
-        function createSurveyChart(id) { const ctx = document.getElementById(`${id}-chart`).getContext('2d'); return new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [{ label: 'Concentration (items/m²)', data: [], backgroundColor: ['#34d399', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'items/m²' } } }, plugins: { legend: { display: false } } } }); }
-        function calculateCalibrationResult(id) { const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; const config = configs[id]; const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); let finalUnknownAbs = parseFloat(unknownAbsInput.value); if (config.method === 'dual_wavelength') { const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; finalUnknownAbs -= (2 * unknownAbs2); } else if (isNaN(finalUnknownAbs)) return; if (dataStore.length < 3) return; const { m, c } = regressionParams[id]; if (isNaN(m) || isNaN(c)) return; const concentration = (finalUnknownAbs - c) / m; document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; document.getElementById(`${id}-result-output`).classList.remove('hidden'); document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
-        function calculateMacroDebrisDensity(id) { const config = configs[id]; const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; const area = length * width; if (document.getElementById(`${id}-area-display`)) document.getElementById(`${id}-area-display`).textContent = area; if (area === 0) return; const results = []; config.categories.forEach(cat => { const count = parseInt(document.getElementById(`${id}-${cat}-input`).value) || 0; results.push({ category: cat, count: count, concentration: count / area }); }); const tableBody = document.getElementById(`${id}-results-table`); if(tableBody) tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join(''); if(macrodebrisChart) { macrodebrisChart.data.labels = results.map(r => r.category); macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); macrodebrisChart.update(); } if(document.getElementById(`${id}-download-btn`)) document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
-    
+
+        function generateSurveyPanel(config) { 
+             return ` <div class="bg-white p-6 rounded-xl border instrument-panel"> <h3 class="font-semibold text-xl text-gray-700 mb-4">Survey Area & Debris Count</h3> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label for="${config.id}-length-input" class="block text-sm font-medium text-gray-700">Transect Length (m)</label> <input id="${config.id}-length-input" type="number" value="100" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> <div> <label for="${config.id}-width-input" class="block text-sm font-medium text-gray-700">Transect Width (m)</label> <input id="${config.id}-width-input" type="number" value="20" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> </div> <p class="text-sm text-gray-600 mt-3 font-medium">Total Area: <span id="${config.id}-area-display">2000</span> m²</p> <hr class="my-4"> <p class="text-sm text-gray-500 mb-4">Enter the total count for each debris category found in the survey area.</p> <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"> ${config.categories.map(name => ` <div> <label for="${config.id}-${name.toLowerCase()}-input" class="block text-sm font-medium text-gray-700">${name} (count)</label> <input id="${config.id}-${name.toLowerCase()}-input" type="number" placeholder="e.g., ${Math.floor(Math.random() * 200 + 40)}" class="mt-1 w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"> </div> `).join('')} </div> </div> <div class="bg-white p-6 rounded-xl border result-card text-white"> <h3 class="font-semibold text-xl mb-4">Result Calculation</h3> <button onclick="calculateResult('${config.id}')" class="w-full bg-white/30 hover:bg-white/40 font-bold py-3 px-4 rounded-lg transition">Calculate Debris Density</button> </div> <div class="bg-white p-6 rounded-xl border lg:col-span-2"> <h3 class="font-semibold text-xl text-gray-700 mb-2">Debris Density Results</h3> <div class="overflow-x-auto mb-4"> <table class="w-full text-sm text-left text-gray-500"> <thead class="text-xs text-gray-700 uppercase bg-gray-100"> <tr> <th scope="col" class="px-4 py-3">Debris Type</th> <th scope="col" class="px-4 py-3">Count</th> <th scope="col" class="px-4 py-3">Concentration (items/m²)</th> </tr> </thead> <tbody id="${config.id}-results-table"> <tr><td colspan="3" class="text-center py-4 text-gray-400">Results will appear here...</td></tr> </tbody> </table> </div> <div id="${config.id}-chart-container" class="relative h-64"><canvas id="${config.id}-chart"></canvas></div> <div class="mt-4"><button id="${config.id}-download-btn" onclick="downloadResults('${config.id}')" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition hidden items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.707a1 1 0 011.414 0L9 11.086V3a1 1 0 112 0v8.086l1.293-1.379a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>Download Report</button></div> </div> `; 
+        }
 
         function generateExperimentHTML(config) {
             let rightPanelHTML;
@@ -615,8 +612,8 @@
                 default: rightPanelHTML = generateCalibrationPanel(config);
             }
             return `
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-gray-50 p-6 rounded-xl border">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-gray-50 p-6 rounded-xl border">
                         <h2 class="text-2xl font-bold text-gray-700 mb-4">${config.title}</h2>
                         <div class="mb-4">
                             <h3 class="font-semibold text-lg text-gray-600">Principle:</h3>
@@ -630,7 +627,7 @@
                         ` : ''}
                         <h3 class="font-semibold text-lg text-gray-600 mb-2">Procedure:</h3>
                         <div id="${config.id}-procedure-stepper">
-                            ${config.procedure.map((step, index) => `<div id="${config.id}-step-${index}" class="step-content ${index === 0 ? 'active' : ''}"><h3 class="font-semibold text-lg text-gray-600 mb-2">Step ${index + 1}</h3><p class="text-gray-700">${step}</p></div>`).join('')}
+                            ${config.procedure.map((step, index) => `<div id="${config.id}-step-${index}" class="step-content ${index === 0 ? 'active' : ''}"><h4 class="font-semibold text-gray-800 mb-1">Step ${index + 1}</h4><p class="text-gray-600 text-sm">${step}</p></div>`).join('')}
                         </div>
                         <div class="mt-6 flex justify-between items-center">
                             <button onclick="navigateStep('${config.id}', -1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition">Previous</button>
@@ -638,7 +635,7 @@
                             <button onclick="navigateStep('${config.id}', 1)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">Next</button>
                         </div>
                     </div>
-                    <div class="space-y-6">${rightPanelHTML}</div>
+                    <div class="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-min">${rightPanelHTML}</div>
                 </div>
             `;
         }
@@ -696,6 +693,29 @@
         // --- Core Logic ---
 
         let currentSteps = { samplingstrategy: 0, standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
+
+        function navigateStep(id, direction) {
+            const config = configs[id];
+            const procedureLength = config.procedure.length;
+            let currentStep = currentSteps[id];
+
+            currentStep += direction;
+
+            if (currentStep < 0) {
+                currentStep = 0;
+            } else if (currentStep >= procedureLength) {
+                currentStep = procedureLength - 1;
+            }
+
+            currentSteps[id] = currentStep;
+
+            for (let i = 0; i < procedureLength; i++) {
+                document.getElementById(`${id}-step-${i}`).classList.remove('active');
+            }
+
+            document.getElementById(`${id}-step-${currentStep}`).classList.add('active');
+            document.getElementById(`${id}-step-indicator`).textContent = `${currentStep + 1} / ${procedureLength}`;
+        }
         
         function addDataPoint(id) {
             const config = configs[id];
@@ -756,7 +776,8 @@
             else return;
 
             const tableBody = document.getElementById(`${id}-data-table`);
-            if (dataStore.length === 0) { tableBody.innerHTML = ''; return; }
+            if (!tableBody) return;
+            if (dataStore.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">No data points added.</td></tr>`; return; }
             if (config.type === 'calibration_check' || config.type === 'lod_loq_check') {
                  tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.x}</td><td class="px-4 py-3">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join('');
             } else if (config.method === 'dual_wavelength') { 
@@ -768,8 +789,10 @@
         
         // --- Charting ---
         function createCalibrationChart(id) { 
+            const chartCanvas = document.getElementById(`${id}-chart`);
+            if (!chartCanvas) return null;
             const config = configs[id]; 
-            const ctx = document.getElementById(`${id}-chart`).getContext('2d'); 
+            const ctx = chartCanvas.getContext('2d'); 
             return new Chart(ctx, { 
                 type: 'scatter', 
                 data: { 
@@ -787,6 +810,51 @@
             }); 
         }
 
+        function createSurveyChart(id) {
+            const chartCanvas = document.getElementById(`${id}-chart`);
+            if (!chartCanvas) return null;
+            const config = configs[id];
+            const ctx = chartCanvas.getContext('2d');
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: config.categories,
+                    datasets: [{
+                        label: 'Debris Density (items/m²)',
+                        data: [],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Density (items/m²)' }
+                        },
+                        x: {
+                             title: { display: true, text: 'Debris Category' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
         
         function updateLodLoqCheck() {
             const id = 'lodloq';
@@ -1169,7 +1237,7 @@
             if (config.type === 'survey') calculateMacroDebrisDensity(id);
             else if (config.type === 'io_ratio') calculateIORatio(id);
             else if (config.type === 'gravimetric') calculateGravimetricResult(id);
-            else if (config.type === 'calibration') calculateCalibrationResult(id);
+            else if (config.type === 'calibration' || config.type === 'calibration_check' || config.type === 'lod_loq_check') calculateCalibrationResult(id);
         }
 
         function calculateGravimetricResult(id) {
@@ -1213,11 +1281,13 @@
             const resultOutput = document.getElementById(`${id}-result-output`);
             const resultText = document.getElementById(`${id}-result-text`);
             const interpretationText = document.getElementById(`${id}-interpretation-text`);
+            const downloadBtn = document.getElementById(`${id}-download-btn`);
 
             if (isNaN(indoor) || isNaN(outdoor) || outdoor === 0) {
                 resultText.textContent = 'Error';
                 interpretationText.textContent = 'Please enter valid indoor and outdoor values. Outdoor value cannot be zero.';
                 resultOutput.classList.remove('hidden');
+                downloadBtn.classList.add('hidden');
                 return;
             }
 
@@ -1233,7 +1303,60 @@
             }
 
             resultOutput.classList.remove('hidden');
-            document.getElementById(`${id}-download-btn`).classList.remove('hidden');
+            downloadBtn.classList.remove('hidden');
+        }
+        
+        function calculateMacroDebrisDensity(id) { 
+            const config = configs[id]; 
+            const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; 
+            const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; 
+            const area = length * width; 
+            const areaDisplay = document.getElementById(`${id}-area-display`);
+            if (areaDisplay) areaDisplay.textContent = area; 
+            if (area === 0) return; 
+
+            const results = config.categories.map(cat => { 
+                const count = parseInt(document.getElementById(`${id}-${cat.toLowerCase()}-input`).value) || 0; 
+                return { category: cat, count: count, concentration: count / area }; 
+            }); 
+            
+            const tableBody = document.getElementById(`${id}-results-table`); 
+            if(tableBody) {
+                if (results.every(r => r.count === 0)) {
+                    tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-400">Enter debris counts to see results.</td></tr>`;
+                } else {
+                    tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join('');
+                }
+            }
+             
+            if(macrodebrisChart) { 
+                macrodebrisChart.data.labels = results.map(r => r.category); 
+                macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); 
+                macrodebrisChart.update(); 
+            } 
+            
+            const downloadBtn = document.getElementById(`${id}-download-btn`);
+            if(downloadBtn) downloadBtn.classList.remove('hidden'); 
+        }
+
+        function calculateCalibrationResult(id) { 
+            const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; 
+            const config = configs[id]; 
+            const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); 
+            let finalUnknownAbs = parseFloat(unknownAbsInput.value); 
+            if (config.method === 'dual_wavelength') { 
+                const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); 
+                if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; 
+                finalUnknownAbs -= (2 * unknownAbs2); 
+            } else if (isNaN(finalUnknownAbs)) return; 
+            if (dataStore.length < 3) return; 
+            const { m, c } = regressionParams[id]; 
+            if (isNaN(m) || isNaN(c)) return; 
+            const concentration = (finalUnknownAbs - c) / m; 
+            document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; 
+            document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; 
+            document.getElementById(`${id}-result-output`).classList.remove('hidden'); 
+            document.getElementById(`${id}-download-btn`).classList.remove('hidden'); 
         }
         
         function downloadResults(id) {
@@ -1241,15 +1364,15 @@
             let fileContent = `--- Environmental Analysis Lab Results ---\n\nExperiment: ${config.title}\nDate: ${new Date().toLocaleString()}\n\n`;
             
             if (config.type === 'survey') {
-                 const length = document.getElementById(`${id}-length-input`).value;
+                const length = document.getElementById(`${id}-length-input`).value;
                 const width = document.getElementById(`${id}-width-input`).value;
                 const area = document.getElementById(`${id}-area-display`).textContent;
                 fileContent += `--- Survey Area ---\nLength: ${length} m\nWidth: ${width} m\nTotal Area: ${area} m²\n\n--- Debris Count & Density ---\n`;
                 fileContent += `Category\t\tCount\t\tDensity (items/m²)\n----------------------------------------------------------\n`;
                 config.categories.forEach(cat => {
-                    const count = document.getElementById(`${id}-${cat}-input`).value || 0;
+                    const count = document.getElementById(`${id}-${cat.toLowerCase()}-input`).value || 0;
                     const density = (parseFloat(count) / parseFloat(area)).toFixed(5);
-                    fileContent += `${cat}\t\t\t${count}\t\t${density}\n`;
+                    fileContent += `${cat.padEnd(16)}${count}\t\t${density}\n`;
                 });
             } 
             else if (config.type === 'lod_loq_check') {
@@ -1340,18 +1463,19 @@
                     dataStore.forEach(p => { fileContent += `${p.x.toFixed(2)}\t\t\t\t${p.y.toFixed(4)}\n`; }); 
                 } 
                 fileContent += `\n--- Analysis ---\n`; 
-                const { m, c } = regressionParams[id]; 
+                const { m, c } = regressionParams[id] || {}; 
                 if (!isNaN(m)) fileContent += `Regression Line: y = ${m.toFixed(4)}x + ${c.toFixed(4)}\n`; 
                 const qaqcOutput = document.getElementById(`${id}-qaqc-output`); 
-                if (!qaqcOutput.classList.contains('hidden')) { 
+                if (qaqcOutput && !qaqcOutput.classList.contains('hidden')) { 
                     const lod = document.getElementById(`${id}-lod-text`).textContent; 
                     const loq = document.getElementById(`${id}-loq-text`).textContent; 
                     fileContent += `Limit of Detection (LOD): ${lod} ${config.units}\n`; 
                     fileContent += `Limit of Quantitation (LOQ): ${loq} ${config.units}\n`; 
                 } 
                 fileContent += `\n--- FINAL RESULT ---\n`; 
+                const resultOutput = document.getElementById(`${id}-result-output`);
                 const resultText = document.getElementById(`${id}-result-text`).textContent; 
-                if (document.getElementById(`${id}-result-output`).classList.contains('hidden')) { 
+                if (resultOutput && resultOutput.classList.contains('hidden')) { 
                     fileContent += `Concentration of Unknown Sample: Not calculated.\n`; 
                 } else { 
                     fileContent += `Concentration of Unknown Sample: ${resultText}\n`; 
@@ -1389,9 +1513,11 @@
             const macroLength = document.getElementById('macrodebris-length-input');
             const macroWidth = document.getElementById('macrodebris-width-input');
             const macroAreaDisplay = document.getElementById('macrodebris-area-display');
-            const updateArea = () => { if(macroAreaDisplay) macroAreaDisplay.textContent = (parseFloat(macroLength.value) || 0) * (parseFloat(macroWidth.value) || 0); };
-            if(macroLength) macroLength.addEventListener('input', updateArea);
-            if(macroWidth) macroWidth.addEventListener('input', updateArea);
+            if (macroLength && macroWidth && macroAreaDisplay) {
+                const updateArea = () => { macroAreaDisplay.textContent = (parseFloat(macroLength.value) || 0) * (parseFloat(macroWidth.value) || 0); };
+                macroLength.addEventListener('input', updateArea);
+                macroWidth.addEventListener('input', updateArea);
+            }
             
             const concentrationUnitSelector = document.getElementById('weigh-concentration-unit');
             if (concentrationUnitSelector) {
@@ -1404,10 +1530,6 @@
     </script>
 </body>
 </html>
-
-
-
-
 
 
 
