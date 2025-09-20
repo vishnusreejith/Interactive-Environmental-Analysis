@@ -97,6 +97,7 @@
         let calibrationData = [], lodLoqData = [], nitrateData = [], sulphateData = [];
         let regressionParams = { calibration: {}, lodloq: {}, nitrate: {}, sulphate: {} };
         let currentSteps = {};
+        let currentNoteSteps = {};
 
         // --- Experiment Configurations ---
         const configs = { 
@@ -106,37 +107,37 @@
                 type: 'sampling_strategy', 
                 title: 'Sampling Strategy & Design', 
                 principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', 
-                notes: `
-                    <div>
+                notes: [
+                    `
                         <h4 class="font-semibold text-gray-600">Step 1: Choose the Right Variability Metric</h4>
                         <p class="mt-1">First, determine if your data is continuous or categorical.</p>
                         <ul class="list-disc list-inside mt-1 pl-2">
                             <li><strong>Standard Deviation (σ):</strong> Use this for continuous, numerical data (e.g., concentration of a chemical in mg/L, temperature in °C).</li>
                             <li><strong>Proportion (p):</strong> Use this for categorical or binary data (e.g., presence/absence of a contaminant, whether a sample exceeds a legal limit, yes/no responses).</li>
                         </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-600">Step 2: Estimate the Standard Deviation (σ)</h4>
+                    `,
+                    `
+                         <h4 class="font-semibold text-gray-600">Step 2: Estimate the Standard Deviation (σ)</h4>
                          <p class="mt-1">If you are working with continuous data, you need to estimate its variability. Here are common ways to do this:</p>
                         <ul class="list-disc list-inside mt-1 pl-2">
                             <li><strong>Use a Pilot Study:</strong> Collect a small preliminary set of samples (e.g., 20-30) and calculate their standard deviation using the calculator on the right. This is often the most reliable method.</li>
                             <li><strong>Use Data from Previous Studies:</strong> Look for similar research conducted in your area or on a similar population and use the standard deviation they reported.</li>
                             <li><strong>Use the Range Rule of Thumb:</strong> As a rough estimate when no data is available, you can use the formula: <strong>σ ≈ (Max Value - Min Value) / 4</strong>. For example, if you expect nitrate levels in a stream to range from 1 mg/L to 7 mg/L, the estimated σ would be (7 - 1) / 4 = 1.5 mg/L.</li>
                         </ul>
-                    </div>
-                     <div>
+                    `,
+                    `
                         <h4 class="font-semibold text-gray-600">Step 3: Estimate the Proportion (p)</h4>
                          <p class="mt-1">If your data is categorical, you need to estimate the proportion of the population that has a certain characteristic.</p>
                         <ul class="list-disc list-inside mt-1 pl-2">
                              <li><strong>Use Existing Data:</strong> If previous surveys exist, use their findings. For instance, if a prior study found that 20% of local wells were contaminated, you would use p = 0.20.</li>
                             <li><strong>Use the Most Conservative Estimate:</strong> If you have absolutely no prior information, <strong>use p = 0.5</strong>. A proportion of 0.5 represents the maximum possible variability in the data. This will result in the largest required sample size, ensuring your study is robust enough to handle the worst-case scenario.</li>
                         </ul>
-                    </div>
-                     <div>
-                        <h4 class="font-semibold text-gray-600">Step 4: Use the Calculators</h4>
+                    `,
+                    `
+                         <h4 class="font-semibold text-gray-600">Step 4: Use the Calculators</h4>
                          <p class="mt-1">Once you have your estimate for σ or p, enter it into the appropriate calculator along with your desired confidence level and margin of error. If you know the total population size (e.g., total number of drums at a waste site), entering it will apply a finite population correction, which can reduce the required sample size.</p>
-                    </div>
-                `,
+                    `
+                ],
                 procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]
             },
             standardprep: { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]},
@@ -642,7 +643,16 @@
                         ${config.notes ? `
                         <div class="mb-4">
                             <h3 class="font-semibold text-lg text-gray-600">Note on Estimating Variability:</h3>
-                            <div class="text-gray-500 text-sm mt-1 space-y-3">${config.notes}</div>
+                            ${Array.isArray(config.notes) ? `
+                                <div id="${config.id}-note-stepper" class="mt-2 space-y-3">
+                                    ${config.notes.map((note, index) => `<div id="${config.id}-note-${index}" class="step-content ${index === 0 ? 'active' : ''}">${note}</div>`).join('')}
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <button onclick="navigateNoteStep('${config.id}', -1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition">Previous</button>
+                                    <span id="${config.id}-note-step-indicator" class="text-gray-600 font-medium">1 / ${config.notes.length}</span>
+                                    <button onclick="navigateNoteStep('${config.id}', 1)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">Next</button>
+                                </div>
+                            ` : `<div class="text-gray-500 text-sm mt-1 space-y-3">${config.notes}</div>`}
                         </div>
                         ` : ''}
                         <h3 class="font-semibold text-lg text-gray-600 mb-2">Procedure:</h3>
@@ -689,6 +699,7 @@
 
             // Reset step counters for experiment pages
             currentSteps[id] = 0;
+            currentNoteSteps[id] = 0;
 
             // Initialize components based on the page
             switch(configs[id].type) {
@@ -744,7 +755,7 @@
         window.addEventListener('hashchange', navigate);
 
         // --- Core Logic & Calculations (Functions are collapsed for brevity but remain unchanged) ---
-
+        function navigateNoteStep(id, direction) { const config = configs[id]; if (!config || !Array.isArray(config.notes)) return; const noteLength = config.notes.length; let currentStep = currentNoteSteps[id] || 0; currentStep += direction; if (currentStep < 0) { currentStep = 0; } else if (currentStep >= noteLength) { currentStep = noteLength - 1; } currentNoteSteps[id] = currentStep; for (let i = 0; i < noteLength; i++) { document.getElementById(`${id}-note-${i}`).classList.remove('active'); } document.getElementById(`${id}-note-${currentStep}`).classList.add('active'); document.getElementById(`${id}-note-step-indicator`).textContent = `${currentStep + 1} / ${noteLength}`; }
         function navigateStep(id, direction) { const config = configs[id]; const procedureLength = config.procedure.length; let currentStep = currentSteps[id] || 0; currentStep += direction; if (currentStep < 0) { currentStep = 0; } else if (currentStep >= procedureLength) { currentStep = procedureLength - 1; } currentSteps[id] = currentStep; for (let i = 0; i < procedureLength; i++) { document.getElementById(`${id}-step-${i}`).classList.remove('active'); } document.getElementById(`${id}-step-${currentStep}`).classList.add('active'); document.getElementById(`${id}-step-indicator`).textContent = `${currentStep + 1} / ${procedureLength}`; }
         function addDataPoint(id) { const config = configs[id]; const concInput = document.getElementById(`${id}-conc-input`); const absInput = document.getElementById(`${id}-abs-input`); const concentration = parseFloat(concInput.value); const absorbance = parseFloat(absInput.value); let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return; let point = { x: concentration, y: absorbance }; if (config.method === 'dual_wavelength') { const abs2Input = document.getElementById(`${id}-abs2-input`); const absorbance2 = parseFloat(abs2Input.value); if (isNaN(concentration) || isNaN(absorbance) || isNaN(absorbance2)) return; point = { x: concentration, y: (absorbance - (2 * absorbance2)), conc: concentration, abs220: absorbance, abs275: absorbance2 }; abs2Input.value = ''; } else { if (isNaN(concentration) || isNaN(absorbance)) return; } dataStore.push(point); dataStore.sort((a, b) => a.x - b.x); concInput.value = ''; absInput.value = ''; concInput.focus(); renderTable(id); if (id === 'calibration') updateCalibrationCheck(); else if (id === 'lodloq') updateLodLoqCheck(); else updateChart(id); }
         function removeDataPoint(id, index) { let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return; dataStore.splice(index, 1); renderTable(id); if (id === 'calibration') updateCalibrationCheck(); else if (id === 'lodloq') updateLodLoqCheck(); else updateChart(id); }
@@ -773,6 +784,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
