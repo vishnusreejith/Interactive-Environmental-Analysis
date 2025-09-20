@@ -26,12 +26,19 @@
             background-color: #eff6ff;
         }
 
-        .step-content {
-            display: none;
+        .experiment-section {
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        .step-content.active {
-            display: block;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .instrument-panel {
@@ -41,6 +48,23 @@
         
         .result-card {
             background: linear-gradient(to right, #6ee7b7, #3b82f6);
+        }
+
+        .home-card {
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            cursor: pointer;
+        }
+        .home-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -53,96 +77,18 @@
         </header>
 
         <!-- Tab Navigation -->
-        <div class="mb-6 flex flex-wrap justify-center border-b border-gray-200">
-            <button id="samplingstrategy-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Sampling Strategy</button>
-            <button id="standardprep-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Standard Preparation</button>
-            <button id="calibration-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Instrument Calibration</button>
-            <button id="lodloq-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">LOD & LOQ</button>
-            <button id="nitrate-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Nitrate Estimation</button>
-            <button id="sulphate-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Sulphate Estimation</button>
-            <button id="tsp-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">TSP Estimation</button>
-            <button id="macrodebris-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Beach Debris Survey</button>
-            <button id="radiation-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Radiation I/O Ratio</button>
-            <button id="noise-tab-btn" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Noise I/O Ratio</button>
+        <div class="mb-6 flex justify-center border-b border-gray-200">
+            <a id="home-tab-btn" href="#home" class="tab-button text-lg font-semibold py-3 px-6 border-b-2">Home</a>
         </div>
 
         <!-- Main Content Area -->
         <main id="main-content">
-            <!-- Sampling Strategy Section -->
-            <div id="samplingstrategy-section" class="experiment-section hidden">
-                <!-- Content will be dynamically loaded here -->
-            </div>
-            
-            <!-- Standard Preparation Section -->
-            <div id="standardprep-section" class="experiment-section hidden">
-                <!-- Content will be dynamically loaded here -->
-            </div>
-            
-            <!-- Instrument Calibration Section -->
-            <div id="calibration-section" class="experiment-section hidden">
-                <!-- Content will be dynamically loaded here -->
-            </div>
-
-            <!-- LOD/LOQ Section -->
-            <div id="lodloq-section" class="experiment-section hidden">
-                <!-- Content will be dynamically loaded here -->
-            </div>
-
-            <!-- Nitrate Estimation Section -->
-            <div id="nitrate-section" class="experiment-section hidden">
-                <!-- Nitrate content will be dynamically loaded here -->
-            </div>
-
-            <!-- Sulphate Estimation Section -->
-            <div id="sulphate-section" class="experiment-section hidden">
-                <!-- Sulphate content will be dynamically loaded here -->
-            </div>
-
-            <!-- TSP Estimation Section -->
-            <div id="tsp-section" class="experiment-section hidden">
-                <!-- TSP content will be dynamically loaded here -->
-            </div>
-            
-            <!-- Macro Debris Analysis Section -->
-             <div id="macrodebris-section" class="experiment-section hidden">
-                 <!-- Macro Debris content will be dynamically loaded here -->
-            </div>
-
-            <!-- Radiation I/O Ratio Section -->
-             <div id="radiation-section" class="experiment-section hidden">
-                 <!-- Radiation content will be dynamically loaded here -->
-            </div>
-
-             <!-- Noise I/O Ratio Section -->
-             <div id="noise-section" class="experiment-section hidden">
-                 <!-- Noise content will be dynamically loaded here -->
-            </div>
+            <!-- Dynamic content will be loaded here by the router -->
         </main>
     </div>
 
     <script>
-        // Common elements
-        const samplingstrategyTabBtn = document.getElementById('samplingstrategy-tab-btn');
-        const standardprepTabBtn = document.getElementById('standardprep-tab-btn');
-        const calibrationTabBtn = document.getElementById('calibration-tab-btn');
-        const lodloqTabBtn = document.getElementById('lodloq-tab-btn');
-        const nitrateTabBtn = document.getElementById('nitrate-tab-btn');
-        const sulphateTabBtn = document.getElementById('sulphate-tab-btn');
-        const tspTabBtn = document.getElementById('tsp-tab-btn');
-        const macrodebrisTabBtn = document.getElementById('macrodebris-tab-btn');
-        const radiationTabBtn = document.getElementById('radiation-tab-btn');
-        const noiseTabBtn = document.getElementById('noise-tab-btn');
-        
-        const samplingstrategySection = document.getElementById('samplingstrategy-section');
-        const standardprepSection = document.getElementById('standardprep-section');
-        const calibrationSection = document.getElementById('calibration-section');
-        const lodloqSection = document.getElementById('lodloq-section');
-        const nitrateSection = document.getElementById('nitrate-section');
-        const sulphateSection = document.getElementById('sulphate-section');
-        const tspSection = document.getElementById('tsp-section');
-        const macrodebrisSection = document.getElementById('macrodebris-section');
-        const radiationSection = document.getElementById('radiation-section');
-        const noiseSection = document.getElementById('noise-section');
+        // --- DATA AND CONFIGURATION ---
 
         // Chart instances
         let calibrationChart, lodLoqChart, nitrateChart, sulphateChart, macrodebrisChart;
@@ -150,34 +96,104 @@
         // Data stores
         let calibrationData = [], lodLoqData = [], nitrateData = [], sulphateData = [];
         let regressionParams = { calibration: {}, lodloq: {}, nitrate: {}, sulphate: {} };
+        let currentSteps = {};
 
-        // Tab switching logic
-        samplingstrategyTabBtn.addEventListener('click', () => switchTab('samplingstrategy'));
-        standardprepTabBtn.addEventListener('click', () => switchTab('standardprep'));
-        calibrationTabBtn.addEventListener('click', () => switchTab('calibration'));
-        lodloqTabBtn.addEventListener('click', () => switchTab('lodloq'));
-        nitrateTabBtn.addEventListener('click', () => switchTab('nitrate'));
-        sulphateTabBtn.addEventListener('click', () => switchTab('sulphate'));
-        tspTabBtn.addEventListener('click', () => switchTab('tsp'));
-        macrodebrisTabBtn.addEventListener('click', () => switchTab('macrodebris'));
-        radiationTabBtn.addEventListener('click', () => switchTab('radiation'));
-        noiseTabBtn.addEventListener('click', () => switchTab('noise'));
+        // --- Experiment Configurations ---
+        const configs = { 
+            home: { id: 'home', type: 'home' },
+            samplingstrategy: { 
+                id: 'samplingstrategy', 
+                type: 'sampling_strategy', 
+                title: 'Sampling Strategy & Design', 
+                principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', 
+                notes: `
+                    <div>
+                        <h4 class="font-semibold text-gray-600">Step 1: Choose the Right Variability Metric</h4>
+                        <p class="mt-1">First, determine if your data is continuous or categorical.</p>
+                        <ul class="list-disc list-inside mt-1 pl-2">
+                            <li><strong>Standard Deviation (σ):</strong> Use this for continuous, numerical data (e.g., concentration of a chemical in mg/L, temperature in °C).</li>
+                            <li><strong>Proportion (p):</strong> Use this for categorical or binary data (e.g., presence/absence of a contaminant, whether a sample exceeds a legal limit, yes/no responses).</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-600">Step 2: Estimate the Standard Deviation (σ)</h4>
+                         <p class="mt-1">If you are working with continuous data, you need to estimate its variability. Here are common ways to do this:</p>
+                        <ul class="list-disc list-inside mt-1 pl-2">
+                            <li><strong>Use a Pilot Study:</strong> Collect a small preliminary set of samples (e.g., 20-30) and calculate their standard deviation using the calculator on the right. This is often the most reliable method.</li>
+                            <li><strong>Use Data from Previous Studies:</strong> Look for similar research conducted in your area or on a similar population and use the standard deviation they reported.</li>
+                            <li><strong>Use the Range Rule of Thumb:</strong> As a rough estimate when no data is available, you can use the formula: <strong>σ ≈ (Max Value - Min Value) / 4</strong>. For example, if you expect nitrate levels in a stream to range from 1 mg/L to 7 mg/L, the estimated σ would be (7 - 1) / 4 = 1.5 mg/L.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-gray-600">Step 3: Estimate the Proportion (p)</h4>
+                         <p class="mt-1">If your data is categorical, you need to estimate the proportion of the population that has a certain characteristic.</p>
+                        <ul class="list-disc list-inside mt-1 pl-2">
+                             <li><strong>Use Existing Data:</strong> If previous surveys exist, use their findings. For instance, if a prior study found that 20% of local wells were contaminated, you would use p = 0.20.</li>
+                            <li><strong>Use the Most Conservative Estimate:</strong> If you have absolutely no prior information, <strong>use p = 0.5</strong>. A proportion of 0.5 represents the maximum possible variability in the data. This will result in the largest required sample size, ensuring your study is robust enough to handle the worst-case scenario.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-gray-600">Step 4: Use the Calculators</h4>
+                         <p class="mt-1">Once you have your estimate for σ or p, enter it into the appropriate calculator along with your desired confidence level and margin of error. If you know the total population size (e.g., total number of drums at a waste site), entering it will apply a finite population correction, which can reduce the required sample size.</p>
+                    </div>
+                `,
+                procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]
+            },
+            standardprep: { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]},
+            calibration: { id: 'calibration', type: 'calibration_check', title: 'Instrument Calibration & R² Analysis', principle: 'A calibration curve is a graph that plots the known concentrations of a series of standard solutions against the response measured by an instrument. Linear regression is used to fit a straight line to these data points. The coefficient of determination, R-squared (R²), is a statistical measure of how close the data are to the fitted regression line. An R² value of 1 indicates that the regression predictions perfectly fit the data. For analytical chemistry, an R² value greater than 0.99 is typically required for a calibration to be considered valid.', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Prepare a series of at least five standard solutions with known concentrations.", "Measure the instrument's response for each standard solution and for a blank (zero concentration).", "Enter the concentration and the corresponding instrument response for each point.", "The application will automatically plot the data and perform a linear regression analysis.", "Evaluate the R-squared (R²) value. If R² is > 0.99, the calibration is acceptable. If not, the standards or measurements should be checked and repeated."] },
+            lodloq: { id: 'lodloq', type: 'lod_loq_check', title: 'LOD & LOQ from Calibration Data', principle: 'The Limit of Detection (LOD) is the lowest concentration of an analyte that can be reliably distinguished from a blank. The Limit of Quantitation (LOQ) is the lowest concentration that can be measured with an acceptable level of precision and accuracy. They are commonly estimated from the calibration curve using the slope (m) and the standard deviation of the residuals (S_y/x).', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Generate a calibration curve using a series of standards, including a blank and several low-concentration standards near the expected detection limit.", "Enter the concentration and response data for all points.", "The tool calculates the slope (m) and the standard deviation of the residuals (S_y/x) from the regression line.", "LOD and LOQ are then calculated automatically using the formulas: LOD = 3.3 * (S_y/x / |m|) and LOQ = 10 * (S_y/x / |m|)."] },
+            nitrate: { id: 'nitrate', type: 'calibration', method: 'dual_wavelength', title: 'Estimation of Nitrate (Direct UV Screening Method)', principle: 'Nitrate ions absorb ultraviolet light at 220 nm. Since dissolved organic matter may also absorb at this wavelength, a second measurement is taken at 275 nm to correct for this interference. The final absorbance is calculated as A₂₂₀nm - (2 * A₂₇₅nm), which is proportional to the nitrate concentration.', units: 'mg/L', procedure: ["Prepare a series of standard nitrate solutions (e.g., 0-10 mg/L).", "Measure the absorbance of each solution at 220 nm and 275 nm.", "Calculate the corrected absorbance: Abs_corr = Abs_220nm - (2 * Abs_275nm).", "Plot a calibration curve of corrected absorbance vs. concentration.", "Determine the concentration of the unknown sample from the curve."] },
+            sulphate: { id: 'sulphate', type: 'calibration', method: 'single_wavelength', title: 'Estimation of Sulphate (UV-Vis Method)', principle: 'Sulphate ions react with a suspension of Barium Chromate (BaCrO₄), precipitating Barium Sulphate (BaSO₄). This reaction releases an equivalent amount of chromate ions (CrO₄²⁻) into the solution. The concentration of the yellow chromate ions is then measured using a UV-Vis spectrophotometer at 420 nm, which is directly proportional to the original sulphate concentration.', units: 'mg/L', procedure: ["Prepare standard sulphate solutions (e.g., 0-40 mg/L).", "Add a measured amount of solid Barium Chromate to each standard and the unknown sample in a centrifuge tube.", "Shake vigorously for several minutes to allow the reaction to complete.", "Centrifuge the tubes to separate the solid BaSO₄ and unreacted BaCrO₄.", "Carefully transfer the clear supernatant to a cuvette and measure its absorbance at 420 nm.", "Plot a calibration curve of absorbance vs. concentration and determine the unknown sample's concentration."] },
+            tsp: { id: 'tsp', type: 'gravimetric', title: 'Total Suspended Particulates (Gravimetric Method)', principle: 'Gravimetric analysis determines mass by weighing. A high-volume sampler draws a known volume of air through a pre-weighed filter for a set time. The filter is re-weighed, and the weight difference represents the collected particulate mass. Concentration is calculated as mass of particulates per volume of air sampled.', units: 'µg/m³', procedure: ["Record the initial weight of a clean filter paper.", "Place the filter in a high-volume air sampler and record the initial air flow rate.", "Run the sampler for a specific duration (e.g., 8 or 24 hours).", "Record the final air flow rate and remove the filter.", "Record the final weight of the filter paper after sampling.", "Calculate the total air volume and the mass of collected particulates to find the TSP concentration."] },
+            macrodebris: { id: 'macrodebris', type: 'survey', title: 'Beach Macro-Debris Survey', principle: 'This method quantifies large debris on a beach by counting items within a defined area (transect). The results are expressed as number concentration (items per square meter), providing a standardized measure of pollution density.', categories: ['Plastics', 'Glass', 'Metal', 'Rubber', 'Cloth'], procedure: ["Define and measure the survey area (Area = Length × Width).", "Collect and sort all visible macro-debris into categories.", "Count the number of items in each category.", "Calculate the concentration for each category: Concentration = (Number of Items) / (Total Area).", "Record the final debris density results."]},
+            radiation: { id: 'radiation', type: 'io_ratio', title: 'I/O Ratio: Natural Background Radiation', principle: 'This ratio compares indoor radiation levels to outdoor levels. A ratio > 1 suggests the presence of indoor radiation sources (e.g., building materials). A ratio < 1 suggests building materials provide shielding. The instrument used is a Geiger-Müller counter.', units: 'CPM', procedure: ["Take multiple readings outdoors in an open area and calculate the average. This is your outdoor background level.", "Take multiple readings indoors in the center of a room and calculate the average.", "Calculate the ratio: I/O Ratio = (Average Indoor Reading) / (Average Outdoor Reading).", "Interpret the result to assess indoor radiation exposure."] },
+            noise: { id: 'noise', type: 'io_ratio', title: 'I/O Ratio: Noise Pollution', principle: 'This ratio compares indoor vs. outdoor noise levels using a Sound Level Meter. A ratio < 1 indicates the building provides sound insulation. A ratio ≥ 1 suggests poor insulation or significant indoor noise sources. Note: Direct ratio of dB is a simplification for screening purposes.', units: 'dB', procedure: ["Measure the average outdoor noise level away from immediate sound sources.", "Measure the average indoor noise level in a room with windows and doors closed.", "Calculate the ratio: I/O Ratio = (Average Indoor dB) / (Average Outdoor dB).", "Analyze the ratio to evaluate the effectiveness of sound insulation."] }
+        };
 
-        function switchTab(tab) {
-            const tabs = ['samplingstrategy', 'standardprep', 'calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
-            tabs.forEach(t => {
-                const tabBtn = document.getElementById(`${t}-tab-btn`);
-                const section = document.getElementById(`${t}-section`);
-                if (tabBtn && section) {
-                    tabBtn.classList.toggle('active', t === tab);
-                    section.classList.toggle('hidden', t !== tab);
-                }
-            });
+        // --- HTML GENERATION ---
+
+        function generateHomePage() {
+            return `
+                <div class="experiment-section">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-gray-700">Welcome to the Virtual Lab</h2>
+                        <p class="mt-2 text-gray-500">Select an experiment below to get started.</p>
+                    </div>
+                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${generateHomeCard('samplingstrategy', 'Sampling Strategy', 'Calculate sample size and error.', 'M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.773 4.773zM5.25 6H9m-3.75 3H9m-3.75 3H9m3.75 3v-9A1.5 1.5 0 0010.5 3h-6A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h6a1.5 1.5 0 001.5-1.5v-2.25', 'bg-blue-100 text-blue-600')}
+                        ${generateHomeCard('standardprep', 'Standard Preparation', 'Prepare solutions by weight or dilution.', 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z', 'bg-green-100 text-green-600')}
+                        ${generateHomeCard('calibration', 'Instrument Calibration', 'Analyze R² and linearity.', 'M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 3zM1.5 16.5h1.5l1.5-1.5h1.5l1.5 1.5h1.5l1.5-1.5h1.5l1.5 1.5h1.5l1.5-1.5H21', 'bg-yellow-100 text-yellow-600')}
+                        ${generateHomeCard('lodloq', 'LOD & LOQ', 'Determine detection limits.', 'M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM10.5 18.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'bg-purple-100 text-purple-600')}
+                        ${generateHomeCard('nitrate', 'Nitrate Estimation', 'UV screening method.', 'M12 9.75v6.75m0-6.75L15 12m-3-2.25L9 12m3-2.25L15 12m-3-2.25L9 12M15 6.75l-3 3m0 0l-3-3m3 3v6.75m-3-3l-3 3m0-3l3-3m-3 3h6.75', 'bg-red-100 text-red-600')}
+                        ${generateHomeCard('sulphate', 'Sulphate Estimation', 'Turbidimetric method.', 'M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M12 12a6.75 6.75 0 100-13.5 6.75 6.75 0 000 13.5z', 'bg-orange-100 text-orange-600')}
+                        ${generateHomeCard('tsp', 'TSP Estimation', 'Gravimetric air analysis.', 'M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L6 12z', 'bg-gray-100 text-gray-600')}
+                        ${generateHomeCard('macrodebris', 'Beach Debris Survey', 'Quantify macro-debris.', 'M14.74 9l.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0', 'bg-teal-100 text-teal-600')}
+                        ${generateHomeCard('radiation', 'Radiation I/O Ratio', 'Compare indoor/outdoor levels.', 'M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.62a8.985 8.985 0 013-3.803A9.012 9.012 0 0015 9.62c.309-1.211.55-2.483.69-3.792z', 'bg-cyan-100 text-cyan-600')}
+                        ${generateHomeCard('noise', 'Noise I/O Ratio', 'Assess sound insulation.', 'M11.25 4.5l7.5 7.5-7.5 7.5-1.125-1.125L16.293 12l-6.168-6.168L11.25 4.5zM4.5 12l6.168-6.168L9.543 4.5l-7.5 7.5 7.5 7.5 1.125-1.125L4.5 12z', 'bg-indigo-100 text-indigo-600')}
+                    </div>
+                </div>
+            `;
         }
-        
-        // --- HTML Generation ---
 
-        function generateSamplingStrategyPanel(config) {
+        function generateHomeCard(id, title, description, svgPath, colorClasses) {
+            return `
+                <div onclick="window.location.hash = '#${id}'" class="home-card p-6 rounded-xl border border-gray-200/80 bg-white">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center ${colorClasses}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="${svgPath}" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">${title}</h3>
+                            <p class="text-sm text-gray-500">${description}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateSamplingStrategyPanel() {
             return `
                 <div class="bg-white p-6 rounded-xl border instrument-panel">
                     <h3 class="font-semibold text-xl text-gray-700 mb-2">Effective Sample Size Calculator</h3>
@@ -267,7 +283,7 @@
             `;
         }
         
-        function generateStandardPrepPanel(config) {
+        function generateStandardPrepPanel() {
             return `
                 <div class="bg-white p-6 rounded-xl border instrument-panel">
                     <h3 class="font-semibold text-xl text-gray-700 mb-2">Preparation by Weighing a Solid</h3>
@@ -607,13 +623,17 @@
                 case 'gravimetric': rightPanelHTML = generateGravimetricPanel(config); break;
                 case 'calibration_check': rightPanelHTML = generateCalibrationCheckPanel(config); break;
                 case 'lod_loq_check': rightPanelHTML = generateLodLoqPanel(config); break;
-                case 'standard_prep': rightPanelHTML = generateStandardPrepPanel(config); break;
-                case 'sampling_strategy': rightPanelHTML = generateSamplingStrategyPanel(config); break;
+                case 'standard_prep': rightPanelHTML = generateStandardPrepPanel(); break;
+                case 'sampling_strategy': rightPanelHTML = generateSamplingStrategyPanel(); break;
                 default: rightPanelHTML = generateCalibrationPanel(config);
             }
             return `
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="experiment-section grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-1 bg-gray-50 p-6 rounded-xl border">
+                         <a href="#home" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mb-4 transition-colors">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Home
+                        </a>
                         <h2 class="text-2xl font-bold text-gray-700 mb-4">${config.title}</h2>
                         <div class="mb-4">
                             <h3 class="font-semibold text-lg text-gray-600">Principle:</h3>
@@ -640,896 +660,120 @@
             `;
         }
         
-        // --- Experiment Configurations ---
-        const samplingStrategyConfig = { 
-            id: 'samplingstrategy', 
-            type: 'sampling_strategy', 
-            title: 'Sampling Strategy & Design', 
-            principle: 'Statistical sampling design is fundamental to environmental analysis, ensuring that data collected is representative of the whole system (e.g., a lake, a plume of air pollution). The goal is to obtain results that are both precise (low variability) and accurate (close to the true value) with a known level of confidence, while optimizing effort. This module helps calculate the required number of samples (sample size) and the potential error in your measurements (sampling error).', 
-            notes: `
-                <div>
-                    <h4 class="font-semibold text-gray-600">Step 1: Choose the Right Variability Metric</h4>
-                    <p class="mt-1">First, determine if your data is continuous or categorical.</p>
-                    <ul class="list-disc list-inside mt-1 pl-2">
-                        <li><strong>Standard Deviation (σ):</strong> Use this for continuous, numerical data (e.g., concentration of a chemical in mg/L, temperature in °C).</li>
-                        <li><strong>Proportion (p):</strong> Use this for categorical or binary data (e.g., presence/absence of a contaminant, whether a sample exceeds a legal limit, yes/no responses).</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-600">Step 2: Estimate the Standard Deviation (σ)</h4>
-                     <p class="mt-1">If you are working with continuous data, you need to estimate its variability. Here are common ways to do this:</p>
-                    <ul class="list-disc list-inside mt-1 pl-2">
-                        <li><strong>Use a Pilot Study:</strong> Collect a small preliminary set of samples (e.g., 20-30) and calculate their standard deviation using the calculator on the right. This is often the most reliable method.</li>
-                        <li><strong>Use Data from Previous Studies:</strong> Look for similar research conducted in your area or on a similar population and use the standard deviation they reported.</li>
-                        <li><strong>Use the Range Rule of Thumb:</strong> As a rough estimate when no data is available, you can use the formula: <strong>σ ≈ (Max Value - Min Value) / 4</strong>. For example, if you expect nitrate levels in a stream to range from 1 mg/L to 7 mg/L, the estimated σ would be (7 - 1) / 4 = 1.5 mg/L.</li>
-                    </ul>
-                </div>
-                 <div>
-                    <h4 class="font-semibold text-gray-600">Step 3: Estimate the Proportion (p)</h4>
-                     <p class="mt-1">If your data is categorical, you need to estimate the proportion of the population that has a certain characteristic.</p>
-                    <ul class="list-disc list-inside mt-1 pl-2">
-                         <li><strong>Use Existing Data:</strong> If previous surveys exist, use their findings. For instance, if a prior study found that 20% of local wells were contaminated, you would use p = 0.20.</li>
-                        <li><strong>Use the Most Conservative Estimate:</strong> If you have absolutely no prior information, <strong>use p = 0.5</strong>. A proportion of 0.5 represents the maximum possible variability in the data. This will result in the largest required sample size, ensuring your study is robust enough to handle the worst-case scenario.</li>
-                    </ul>
-                </div>
-                 <div>
-                    <h4 class="font-semibold text-gray-600">Step 4: Use the Calculators</h4>
-                     <p class="mt-1">Once you have your estimate for σ or p, enter it into the appropriate calculator along with your desired confidence level and margin of error. If you know the total population size (e.g., total number of drums at a waste site), entering it will apply a finite population correction, which can reduce the required sample size.</p>
-                </div>
-            `,
-            procedure: ["For the Sample Size Calculator: Enter your desired confidence level (typically 95%), the acceptable margin of error, and an estimate of the variability (standard deviation for continuous data like concentrations, or proportion for categorical data like presence/absence). If you know the total size of the area/population you are sampling from, entering it will apply a finite population correction for a more accurate (and often smaller) required sample size.", "For the Sampling Error Calculator: Enter your confidence level, the number of samples you plan to take (or have already taken), and the estimated variability. This will calculate the margin of error you can expect, which tells you the range within which the true population mean is likely to fall."]
+        // --- ROUTING AND NAVIGATION ---
+
+        const routes = {
+            '#home': generateHomePage,
+            '#samplingstrategy': () => generateExperimentHTML(configs.samplingstrategy),
+            '#standardprep': () => generateExperimentHTML(configs.standardprep),
+            '#calibration': () => generateExperimentHTML(configs.calibration),
+            '#lodloq': () => generateExperimentHTML(configs.lodloq),
+            '#nitrate': () => generateExperimentHTML(configs.nitrate),
+            '#sulphate': () => generateExperimentHTML(configs.sulphate),
+            '#tsp': () => generateExperimentHTML(configs.tsp),
+            '#macrodebris': () => generateExperimentHTML(configs.macrodebris),
+            '#radiation': () => generateExperimentHTML(configs.radiation),
+            '#noise': () => generateExperimentHTML(configs.noise),
         };
-        const standardPrepConfig = { id: 'standardprep', type: 'standard_prep', title: 'Standard Solution Preparation', principle: 'Accurate standard solutions are crucial for calibration. They can be prepared by precisely weighing a pure solid chemical and dissolving it in a specific volume of solvent (e.g., deionized water) to create a primary stock solution. Lower concentration standards are then typically prepared by accurately diluting this stock solution using the mass balance equation C₁V₁ = C₂V₂, where C is concentration and V is volume.', procedure: ["For preparation by weighing, enter the chemical's molar mass, your desired final concentration (in mol/L), and final volume (in mL). The calculator will determine the required mass to weigh.", "For preparation by dilution, enter the concentration of your stock solution (C₁), the final concentration you need (C₂), and the final volume of the diluted solution you want to make (V₂). The calculator will determine the volume of the stock solution (V₁) you need to pipette.", "To perform the dilution, pipette the calculated volume (V₁) of the stock solution into a volumetric flask of the desired final volume (V₂).", "Carefully add the solvent (e.g., deionized water) to the flask until the bottom of the meniscus reaches the calibration mark.", "Cap the flask and invert it several times to ensure the solution is thoroughly mixed."]};
-        const calibrationConfig = { id: 'calibration', type: 'calibration_check', title: 'Instrument Calibration & R² Analysis', principle: 'A calibration curve is a graph that plots the known concentrations of a series of standard solutions against the response measured by an instrument. Linear regression is used to fit a straight line to these data points. The coefficient of determination, R-squared (R²), is a statistical measure of how close the data are to the fitted regression line. An R² value of 1 indicates that the regression predictions perfectly fit the data. For analytical chemistry, an R² value greater than 0.99 is typically required for a calibration to be considered valid.', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Prepare a series of at least five standard solutions with known concentrations.", "Measure the instrument's response for each standard solution and for a blank (zero concentration).", "Enter the concentration and the corresponding instrument response for each point.", "The application will automatically plot the data and perform a linear regression analysis.", "Evaluate the R-squared (R²) value. If R² is > 0.99, the calibration is acceptable. If not, the standards or measurements should be checked and repeated."] };
-        const lodloqConfig = { id: 'lodloq', type: 'lod_loq_check', title: 'LOD & LOQ from Calibration Data', principle: 'The Limit of Detection (LOD) is the lowest concentration of an analyte that can be reliably distinguished from a blank. The Limit of Quantitation (LOQ) is the lowest concentration that can be measured with an acceptable level of precision and accuracy. They are commonly estimated from the calibration curve using the slope (m) and the standard deviation of the residuals (S_y/x).', units: { x: 'Concentration (units)', y: 'Instrument Response' }, procedure: ["Generate a calibration curve using a series of standards, including a blank and several low-concentration standards near the expected detection limit.", "Enter the concentration and response data for all points.", "The tool calculates the slope (m) and the standard deviation of the residuals (S_y/x) from the regression line.", "LOD and LOQ are then calculated automatically using the formulas: LOD = 3.3 * (S_y/x / |m|) and LOQ = 10 * (S_y/x / |m|)."] };
-        const nitrateConfig = { id: 'nitrate', type: 'calibration', method: 'dual_wavelength', title: 'Estimation of Nitrate (Direct UV Screening Method)', principle: 'Nitrate ions absorb ultraviolet light at 220 nm. Since dissolved organic matter may also absorb at this wavelength, a second measurement is taken at 275 nm to correct for this interference. The final absorbance is calculated as A₂₂₀nm - (2 * A₂₇₅nm), which is proportional to the nitrate concentration.', units: 'mg/L', procedure: ["Prepare a series of standard nitrate solutions (e.g., 0-10 mg/L).", "Measure the absorbance of each solution at 220 nm and 275 nm.", "Calculate the corrected absorbance: Abs_corr = Abs_220nm - (2 * Abs_275nm).", "Plot a calibration curve of corrected absorbance vs. concentration.", "Determine the concentration of the unknown sample from the curve."] };
-        const sulphateConfig = { id: 'sulphate', type: 'calibration', method: 'single_wavelength', title: 'Estimation of Sulphate (UV-Vis Method)', principle: 'Sulphate ions react with a suspension of Barium Chromate (BaCrO₄), precipitating Barium Sulphate (BaSO₄). This reaction releases an equivalent amount of chromate ions (CrO₄²⁻) into the solution. The concentration of the yellow chromate ions is then measured using a UV-Vis spectrophotometer at 420 nm, which is directly proportional to the original sulphate concentration.', units: 'mg/L', procedure: ["Prepare standard sulphate solutions (e.g., 0-40 mg/L).", "Add a measured amount of solid Barium Chromate to each standard and the unknown sample in a centrifuge tube.", "Shake vigorously for several minutes to allow the reaction to complete.", "Centrifuge the tubes to separate the solid BaSO₄ and unreacted BaCrO₄.", "Carefully transfer the clear supernatant to a cuvette and measure its absorbance at 420 nm.", "Plot a calibration curve of absorbance vs. concentration and determine the unknown sample's concentration."] };
-        const tspConfig = { id: 'tsp', type: 'gravimetric', title: 'Total Suspended Particulates (Gravimetric Method)', principle: 'Gravimetric analysis determines mass by weighing. A high-volume sampler draws a known volume of air through a pre-weighed filter for a set time. The filter is re-weighed, and the weight difference represents the collected particulate mass. Concentration is calculated as mass of particulates per volume of air sampled.', units: 'µg/m³', procedure: ["Record the initial weight of a clean filter paper.", "Place the filter in a high-volume air sampler and record the initial air flow rate.", "Run the sampler for a specific duration (e.g., 8 or 24 hours).", "Record the final air flow rate and remove the filter.", "Record the final weight of the filter paper after sampling.", "Calculate the total air volume and the mass of collected particulates to find the TSP concentration."] };
-        const macrodebrisConfig = { id: 'macrodebris', type: 'survey', title: 'Beach Macro-Debris Survey', principle: 'This method quantifies large debris on a beach by counting items within a defined area (transect). The results are expressed as number concentration (items per square meter), providing a standardized measure of pollution density.', categories: ['Plastics', 'Glass', 'Metal', 'Rubber', 'Cloth'], procedure: ["Define and measure the survey area (Area = Length × Width).", "Collect and sort all visible macro-debris into categories.", "Count the number of items in each category.", "Calculate the concentration for each category: Concentration = (Number of Items) / (Total Area).", "Record the final debris density results."]};
-        const radiationConfig = { id: 'radiation', type: 'io_ratio', title: 'I/O Ratio: Natural Background Radiation', principle: 'This ratio compares indoor radiation levels to outdoor levels. A ratio > 1 suggests the presence of indoor radiation sources (e.g., building materials). A ratio < 1 suggests building materials provide shielding. The instrument used is a Geiger-Müller counter.', units: 'CPM', procedure: ["Take multiple readings outdoors in an open area and calculate the average. This is your outdoor background level.", "Take multiple readings indoors in the center of a room and calculate the average.", "Calculate the ratio: I/O Ratio = (Average Indoor Reading) / (Average Outdoor Reading).", "Interpret the result to assess indoor radiation exposure."] };
-        const noiseConfig = { id: 'noise', type: 'io_ratio', title: 'I/O Ratio: Noise Pollution', principle: 'This ratio compares indoor vs. outdoor noise levels using a Sound Level Meter. A ratio < 1 indicates the building provides sound insulation. A ratio ≥ 1 suggests poor insulation or significant indoor noise sources. Note: Direct ratio of dB is a simplification for screening purposes.', units: 'dB', procedure: ["Measure the average outdoor noise level away from immediate sound sources.", "Measure the average indoor noise level in a room with windows and doors closed.", "Calculate the ratio: I/O Ratio = (Average Indoor dB) / (Average Outdoor dB).", "Analyze the ratio to evaluate the effectiveness of sound insulation."] };
-        const configs = { samplingstrategy: samplingStrategyConfig, standardprep: standardPrepConfig, calibration: calibrationConfig, lodloq: lodloqConfig, nitrate: nitrateConfig, sulphate: sulphateConfig, tsp: tspConfig, macrodebris: macrodebrisConfig, radiation: radiationConfig, noise: noiseConfig };
-        
-        // --- Core Logic ---
 
-        let currentSteps = { samplingstrategy: 0, standardprep: 0, calibration: 0, lodloq: 0, nitrate: 0, sulphate: 0, tsp: 0, macrodebris: 0, radiation: 0, noise: 0 };
-
-        function navigateStep(id, direction) {
-            const config = configs[id];
-            const procedureLength = config.procedure.length;
-            let currentStep = currentSteps[id];
-
-            currentStep += direction;
-
-            if (currentStep < 0) {
-                currentStep = 0;
-            } else if (currentStep >= procedureLength) {
-                currentStep = procedureLength - 1;
-            }
-
-            currentSteps[id] = currentStep;
-
-            for (let i = 0; i < procedureLength; i++) {
-                document.getElementById(`${id}-step-${i}`).classList.remove('active');
-            }
-
-            document.getElementById(`${id}-step-${currentStep}`).classList.add('active');
-            document.getElementById(`${id}-step-indicator`).textContent = `${currentStep + 1} / ${procedureLength}`;
-        }
-        
-        function addDataPoint(id) {
-            const config = configs[id];
-            const concInput = document.getElementById(`${id}-conc-input`);
-            const absInput = document.getElementById(`${id}-abs-input`);
-            const concentration = parseFloat(concInput.value);
-            const absorbance = parseFloat(absInput.value);
-            
-            let dataStore;
-            if (id === 'nitrate') dataStore = nitrateData;
-            else if (id === 'sulphate') dataStore = sulphateData;
-            else if (id === 'calibration') dataStore = calibrationData;
-            else if (id === 'lodloq') dataStore = lodLoqData;
-            else return;
-
-            let point = { x: concentration, y: absorbance };
-            
-            if (config.method === 'dual_wavelength') {
-                const abs2Input = document.getElementById(`${id}-abs2-input`);
-                const absorbance2 = parseFloat(abs2Input.value);
-                if (isNaN(concentration) || isNaN(absorbance) || isNaN(absorbance2)) return;
-                point = { x: concentration, y: (absorbance - (2 * absorbance2)), conc: concentration, abs220: absorbance, abs275: absorbance2 };
-                abs2Input.value = '';
-            } else {
-                if (isNaN(concentration) || isNaN(absorbance)) return;
-            }
-            dataStore.push(point);
-            dataStore.sort((a, b) => a.x - b.x); 
-            concInput.value = ''; absInput.value = ''; concInput.focus();
-            renderTable(id);
-            if (id === 'calibration') updateCalibrationCheck();
-            else if (id === 'lodloq') updateLodLoqCheck();
-            else updateChart(id);
-        }
-        
-        function removeDataPoint(id, index) { 
-            let dataStore;
-            if (id === 'nitrate') dataStore = nitrateData;
-            else if (id === 'sulphate') dataStore = sulphateData;
-            else if (id === 'calibration') dataStore = calibrationData;
-            else if (id === 'lodloq') dataStore = lodLoqData;
-            else return;
-            
-            dataStore.splice(index, 1); 
-            renderTable(id); 
-            if (id === 'calibration') updateCalibrationCheck();
-            else if (id === 'lodloq') updateLodLoqCheck();
-            else updateChart(id);
-        }
-
-        function renderTable(id) { 
-            const config = configs[id];
-            let dataStore;
-            if (id === 'nitrate') dataStore = nitrateData;
-            else if (id === 'sulphate') dataStore = sulphateData;
-            else if (id === 'calibration') dataStore = calibrationData;
-            else if (id === 'lodloq') dataStore = lodLoqData;
-            else return;
-
-            const tableBody = document.getElementById(`${id}-data-table`);
-            if (!tableBody) return;
-            if (dataStore.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">No data points added.</td></tr>`; return; }
-            if (config.type === 'calibration_check' || config.type === 'lod_loq_check') {
-                 tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.x}</td><td class="px-4 py-3">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join('');
-            } else if (config.method === 'dual_wavelength') { 
-                tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.conc}</td><td class="px-4 py-3">${point.abs220.toFixed(4)}</td><td class="px-4 py-3">${point.abs275.toFixed(4)}</td><td class="px-4 py-3 font-semibold">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join(''); 
-            } else { 
-                tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.x}</td><td class="px-4 py-3">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join(''); 
+        function updateActiveTab(hash) {
+            const homeTabBtn = document.getElementById('home-tab-btn');
+            if (homeTabBtn) {
+                 homeTabBtn.classList.toggle('active', hash === '#home' || hash === '');
             }
         }
-        
-        // --- Charting ---
-        function createCalibrationChart(id) { 
-            const chartCanvas = document.getElementById(`${id}-chart`);
-            if (!chartCanvas) return null;
-            const config = configs[id]; 
-            const ctx = chartCanvas.getContext('2d'); 
-            return new Chart(ctx, { 
-                type: 'scatter', 
-                data: { 
-                    datasets: [ 
-                        { label: 'Standard Solutions', data: [], backgroundColor: 'rgba(59, 130, 246, 0.5)', borderColor: 'rgb(59, 130, 246)', borderWidth: 2, pointRadius: 5 }, 
-                        { label: 'Regression Line', data: [], borderColor: 'rgb(239, 68, 68)', borderWidth: 2, type: 'line', fill: false, pointRadius: 0 } 
-                    ] 
-                }, 
-                options: { 
-                    scales: { 
-                        x: { type: 'linear', position: 'bottom', title: { display: true, text: config.units.x || `Concentration (${config.units})` } }, 
-                        y: { beginAtZero: true, title: { display: true, text: config.units.y || (config.method === 'dual_wavelength' ? 'Corrected Absorbance' : 'Absorbance') } } 
-                    } 
-                } 
-            }); 
-        }
 
-        function createSurveyChart(id) {
-            const chartCanvas = document.getElementById(`${id}-chart`);
-            if (!chartCanvas) return null;
-            const config = configs[id];
-            const ctx = chartCanvas.getContext('2d');
-            return new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: config.categories,
-                    datasets: [{
-                        label: 'Debris Density (items/m²)',
-                        data: [],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                            'rgba(75, 192, 192, 0.5)',
-                            'rgba(153, 102, 255, 0.5)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Density (items/m²)' }
-                        },
-                        x: {
-                             title: { display: true, text: 'Debris Category' }
-                        }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-        
-        function updateLodLoqCheck() {
-            const id = 'lodloq';
-            const chart = lodLoqChart;
-            const dataStore = lodLoqData;
+        function initializePageComponents(hash) {
+            const id = hash.substring(1);
+            if (!configs[id]) return;
 
-            const slopeText = document.getElementById(`${id}-slope-text`);
-            const sdText = document.getElementById(`${id}-sd-text`);
-            const lodText = document.getElementById(`${id}-lod-text`);
-            const loqText = document.getElementById(`${id}-loq-text`);
-            const rsquaredText = document.getElementById(`${id}-rsquared-text`);
-            const interpretationText = document.getElementById(`${id}-interpretation-text`);
-            const downloadBtn = document.getElementById(`${id}-download-btn`);
+            // Reset step counters for experiment pages
+            currentSteps[id] = 0;
 
-            chart.data.datasets[0].data = dataStore;
-
-            if (dataStore.length > 2) {
-                const { m, c, syx, rSquared } = calculateLinearRegression(id);
-                regressionParams[id] = { m, c, syx, rSquared };
-                const xValues = dataStore.map(p => p.x);
-                chart.data.datasets[1].data = [
-                    { x: Math.min(...xValues), y: m * Math.min(...xValues) + c },
-                    { x: Math.max(...xValues), y: m * Math.max(...xValues) + c }
-                ];
-
-                if (!isNaN(m) && !isNaN(syx)) {
-                    slopeText.textContent = m.toFixed(4);
-                    sdText.textContent = syx.toFixed(4);
-                    rsquaredText.textContent = rSquared.toFixed(5);
-                    downloadBtn.classList.remove('hidden');
-
-                    if (rSquared < 0.99) {
-                        interpretationText.textContent = 'Plot not suitable for estimation.';
-                        interpretationText.style.color = '#fee2e2'; // red-100
-                        lodText.textContent = 'N/A';
-                        loqText.textContent = 'N/A';
-                    } else {
-                        interpretationText.textContent = 'Good linearity for estimation.';
-                        interpretationText.style.color = '#dcfce7'; // green-100
-                        if (m !== 0) {
-                            const lod = (3.3 * syx) / Math.abs(m);
-                            const loq = (10 * syx) / Math.abs(m);
-                            lodText.textContent = lod.toFixed(4);
-                            loqText.textContent = loq.toFixed(4);
-                        } else {
-                            lodText.textContent = 'Error';
-                            loqText.textContent = 'Error';
-                        }
+            // Initialize components based on the page
+            switch(configs[id].type) {
+                case 'standard_prep':
+                    const concentrationUnitSelector = document.getElementById('weigh-concentration-unit');
+                    if (concentrationUnitSelector) {
+                        concentrationUnitSelector.addEventListener('change', updateWeighingFormula);
+                        updateWeighingFormula();
                     }
-                } else {
-                    slopeText.textContent = '-';
-                    sdText.textContent = '-';
-                    lodText.textContent = '-';
-                    loqText.textContent = '-';
-                    rsquaredText.textContent = '-';
-                    interpretationText.textContent = '';
-                    downloadBtn.classList.add('hidden');
-                }
-            } else {
-                regressionParams[id] = {};
-                chart.data.datasets[1].data = [];
-                slopeText.textContent = '-';
-                sdText.textContent = '-';
-                lodText.textContent = '-';
-                loqText.textContent = '-';
-                rsquaredText.textContent = '-';
-                interpretationText.textContent = '';
-                downloadBtn.classList.add('hidden');
-            }
-            chart.update();
-        }
-
-        function updateCalibrationCheck() {
-            const id = 'calibration';
-            const chart = calibrationChart;
-            const dataStore = calibrationData;
-            
-            const equationText = document.getElementById(`${id}-equation-text`);
-            const rsquaredText = document.getElementById(`${id}-rsquared-text`);
-            const interpretationText = document.getElementById(`${id}-interpretation-text`);
-            const downloadBtn = document.getElementById(`${id}-download-btn`);
-
-            chart.data.datasets[0].data = dataStore;
-
-            if (dataStore.length > 2) {
-                const { m, c, rSquared } = calculateLinearRegression(id);
-                regressionParams[id] = { m, c, rSquared };
-                const xValues = dataStore.map(p => p.x);
-                chart.data.datasets[1].data = [
-                    { x: Math.min(...xValues), y: m * Math.min(...xValues) + c },
-                    { x: Math.max(...xValues), y: m * Math.max(...xValues) + c }
-                ];
-                
-                if (!isNaN(m) && !isNaN(c) && !isNaN(rSquared)) {
-                    equationText.textContent = `y = ${m.toFixed(4)}x + ${c.toFixed(4)}`;
-                    rsquaredText.textContent = rSquared.toFixed(5);
-                    if (rSquared >= 0.995) {
-                        interpretationText.textContent = 'Excellent linearity. Calibration is acceptable.';
-                        interpretationText.style.color = '#dcfce7'; // green-100
-                    } else if (rSquared >= 0.990) {
-                        interpretationText.textContent = 'Good linearity. Calibration may be acceptable.';
-                        interpretationText.style.color = '#fef9c3'; // yellow-100
-                    } else {
-                        interpretationText.textContent = 'Poor linearity. Check standards and repeat measurements.';
-                         interpretationText.style.color = '#fee2e2'; // red-100
+                    break;
+                case 'calibration_check':
+                    calibrationChart = createCalibrationChart('calibration');
+                    break;
+                case 'lod_loq_check':
+                    lodLoqChart = createCalibrationChart('lodloq');
+                    break;
+                case 'calibration': // For nitrate and sulphate
+                    if (id === 'nitrate') nitrateChart = createCalibrationChart('nitrate');
+                    if (id === 'sulphate') sulphateChart = createCalibrationChart('sulphate');
+                    break;
+                case 'survey':
+                    macrodebrisChart = createSurveyChart('macrodebris');
+                    const macroLength = document.getElementById('macrodebris-length-input');
+                    const macroWidth = document.getElementById('macrodebris-width-input');
+                    const macroAreaDisplay = document.getElementById('macrodebris-area-display');
+                    if (macroLength && macroWidth && macroAreaDisplay) {
+                        const updateArea = () => { macroAreaDisplay.textContent = (parseFloat(macroLength.value) || 0) * (parseFloat(macroWidth.value) || 0); };
+                        macroLength.addEventListener('input', updateArea);
+                        macroWidth.addEventListener('input', updateArea);
                     }
-                    downloadBtn.classList.remove('hidden');
-                }
+                    break;
+            }
+        }
+
+        function navigate() {
+            const hash = window.location.hash || '#home';
+            const mainContent = document.getElementById('main-content');
+            
+            const generatorFunction = routes[hash];
+
+            if (generatorFunction) {
+                mainContent.innerHTML = generatorFunction();
+                initializePageComponents(hash);
             } else {
-                regressionParams[id] = {};
-                chart.data.datasets[1].data = [];
-                equationText.textContent = '-';
-                rsquaredText.textContent = '-';
-                interpretationText.textContent = '';
-                downloadBtn.classList.add('hidden');
+                mainContent.innerHTML = generateHomePage();
+                initializePageComponents('#home');
             }
-            chart.update();
+            updateActiveTab(window.location.hash || '#home');
         }
 
-        function updateChart(id) { 
-            const chart = (id === 'nitrate') ? nitrateChart : sulphateChart; 
-            const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; 
-            const qaqcOutput = document.getElementById(`${id}-qaqc-output`); 
-            const lodText = document.getElementById(`${id}-lod-text`); 
-            const loqText = document.getElementById(`${id}-loq-text`); 
-            chart.data.datasets[0].data = dataStore; 
-            if (dataStore.length > 2) { 
-                const { m, c, syx } = calculateLinearRegression(id); 
-                regressionParams[id] = { m, c }; 
-                const xValues = dataStore.map(p => p.x); 
-                chart.data.datasets[1].data = [ { x: Math.min(...xValues), y: m * Math.min(...xValues) + c }, { x: Math.max(...xValues), y: m * Math.max(...xValues) + c } ]; 
-                if (!isNaN(m) && !isNaN(syx) && m !== 0) { 
-                    const lod = (3.3 * syx) / Math.abs(m); 
-                    const loq = (10 * syx) / Math.abs(m); 
-                    lodText.textContent = `${lod.toFixed(4)}`; 
-                    loqText.textContent = `${loq.toFixed(4)}`; 
-                    qaqcOutput.classList.remove('hidden'); 
-                } else { 
-                    qaqcOutput.classList.add('hidden'); 
-                } 
-            } else { 
-                regressionParams[id] = {}; 
-                chart.data.datasets[1].data = []; 
-                qaqcOutput.classList.add('hidden'); 
-            } 
-            document.getElementById(`${id}-result-output`).classList.add('hidden'); 
-            document.getElementById(`${id}-download-btn`).classList.add('hidden'); 
-            document.getElementById(`${id}-unknown-abs`).value = ''; 
-            if(configs[id] && configs[id].method === 'dual_wavelength') { 
-                document.getElementById(`${id}-unknown-abs2`).value = ''; 
-            } 
-            chart.update(); 
-        }
+        // Initial load and hash change listeners
+        window.addEventListener('DOMContentLoaded', navigate);
+        window.addEventListener('hashchange', navigate);
 
-        // --- Calculations ---
-        function calculateStandardDeviation(data) {
-            const n = data.length;
-            if (n <= 1) return 0;
-            const mean = data.reduce((a, b) => a + b) / n;
-            const sumOfSquaredDifferences = data.reduce((sum, value) => {
-                return sum + Math.pow(value - mean, 2);
-            }, 0);
-            const variance = sumOfSquaredDifferences / (n - 1);
-            return Math.sqrt(variance);
-        }
+        // --- Core Logic & Calculations (Functions are collapsed for brevity but remain unchanged) ---
 
-        function calculateAndDisplayStdDev(type) {
-            const textarea = document.getElementById(`${type}-pilot-data`);
-            const dataString = textarea.value;
-            const dataArray = dataString.split(',').map(Number).filter(n => !isNaN(n) && n !== null);
+        function navigateStep(id, direction) { const config = configs[id]; const procedureLength = config.procedure.length; let currentStep = currentSteps[id] || 0; currentStep += direction; if (currentStep < 0) { currentStep = 0; } else if (currentStep >= procedureLength) { currentStep = procedureLength - 1; } currentSteps[id] = currentStep; for (let i = 0; i < procedureLength; i++) { document.getElementById(`${id}-step-${i}`).classList.remove('active'); } document.getElementById(`${id}-step-${currentStep}`).classList.add('active'); document.getElementById(`${id}-step-indicator`).textContent = `${currentStep + 1} / ${procedureLength}`; }
+        function addDataPoint(id) { const config = configs[id]; const concInput = document.getElementById(`${id}-conc-input`); const absInput = document.getElementById(`${id}-abs-input`); const concentration = parseFloat(concInput.value); const absorbance = parseFloat(absInput.value); let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return; let point = { x: concentration, y: absorbance }; if (config.method === 'dual_wavelength') { const abs2Input = document.getElementById(`${id}-abs2-input`); const absorbance2 = parseFloat(abs2Input.value); if (isNaN(concentration) || isNaN(absorbance) || isNaN(absorbance2)) return; point = { x: concentration, y: (absorbance - (2 * absorbance2)), conc: concentration, abs220: absorbance, abs275: absorbance2 }; abs2Input.value = ''; } else { if (isNaN(concentration) || isNaN(absorbance)) return; } dataStore.push(point); dataStore.sort((a, b) => a.x - b.x); concInput.value = ''; absInput.value = ''; concInput.focus(); renderTable(id); if (id === 'calibration') updateCalibrationCheck(); else if (id === 'lodloq') updateLodLoqCheck(); else updateChart(id); }
+        function removeDataPoint(id, index) { let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return; dataStore.splice(index, 1); renderTable(id); if (id === 'calibration') updateCalibrationCheck(); else if (id === 'lodloq') updateLodLoqCheck(); else updateChart(id); }
+        function renderTable(id) { const config = configs[id]; let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return; const tableBody = document.getElementById(`${id}-data-table`); if (!tableBody) return; if (dataStore.length === 0) { tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">No data points added.</td></tr>`; return; } if (config.type === 'calibration_check' || config.type === 'lod_loq_check') { tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.x}</td><td class="px-4 py-3">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join(''); } else if (config.method === 'dual_wavelength') { tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.conc}</td><td class="px-4 py-3">${point.abs220.toFixed(4)}</td><td class="px-4 py-3">${point.abs275.toFixed(4)}</td><td class="px-4 py-3 font-semibold">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join(''); } else { tableBody.innerHTML = dataStore.map((point, index) => `<tr class="bg-white border-b"><td class="px-4 py-3">${point.x}</td><td class="px-4 py-3">${point.y.toFixed(4)}</td><td class="px-4 py-3"><button onclick="removeDataPoint('${id}', ${index})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td></tr>`).join(''); } }
+        function createCalibrationChart(id) { const chartCanvas = document.getElementById(`${id}-chart`); if (!chartCanvas) return null; const config = configs[id]; const ctx = chartCanvas.getContext('2d'); return new Chart(ctx, { type: 'scatter', data: { datasets: [ { label: 'Standard Solutions', data: [], backgroundColor: 'rgba(59, 130, 246, 0.5)', borderColor: 'rgb(59, 130, 246)', borderWidth: 2, pointRadius: 5 }, { label: 'Regression Line', data: [], borderColor: 'rgb(239, 68, 68)', borderWidth: 2, type: 'line', fill: false, pointRadius: 0 } ] }, options: { scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: config.units.x || `Concentration (${config.units})` } }, y: { beginAtZero: true, title: { display: true, text: config.units.y || (config.method === 'dual_wavelength' ? 'Corrected Absorbance' : 'Absorbance') } } } } }); }
+        function createSurveyChart(id) { const chartCanvas = document.getElementById(`${id}-chart`); if (!chartCanvas) return null; const config = configs[id]; const ctx = chartCanvas.getContext('2d'); return new Chart(ctx, { type: 'bar', data: { labels: config.categories, datasets: [{ label: 'Debris Density (items/m²)', data: [], backgroundColor: [ 'rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', ], borderColor: [ 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', ], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Density (items/m²)' } }, x: { title: { display: true, text: 'Debris Category' } } }, plugins: { legend: { display: false } } } }); }
+        function updateLodLoqCheck() { const id = 'lodloq'; const chart = lodLoqChart; const dataStore = lodLoqData; const slopeText = document.getElementById(`${id}-slope-text`); const sdText = document.getElementById(`${id}-sd-text`); const lodText = document.getElementById(`${id}-lod-text`); const loqText = document.getElementById(`${id}-loq-text`); const rsquaredText = document.getElementById(`${id}-rsquared-text`); const interpretationText = document.getElementById(`${id}-interpretation-text`); const downloadBtn = document.getElementById(`${id}-download-btn`); if (!chart) return; chart.data.datasets[0].data = dataStore; if (dataStore.length > 2) { const { m, c, syx, rSquared } = calculateLinearRegression(id); regressionParams[id] = { m, c, syx, rSquared }; const xValues = dataStore.map(p => p.x); chart.data.datasets[1].data = [ { x: Math.min(...xValues), y: m * Math.min(...xValues) + c }, { x: Math.max(...xValues), y: m * Math.max(...xValues) + c } ]; if (!isNaN(m) && !isNaN(syx)) { slopeText.textContent = m.toFixed(4); sdText.textContent = syx.toFixed(4); rsquaredText.textContent = rSquared.toFixed(5); downloadBtn.classList.remove('hidden'); if (rSquared < 0.99) { interpretationText.textContent = 'Plot not suitable for estimation.'; interpretationText.style.color = '#fee2e2'; lodText.textContent = 'N/A'; loqText.textContent = 'N/A'; } else { interpretationText.textContent = 'Good linearity for estimation.'; interpretationText.style.color = '#dcfce7'; if (m !== 0) { const lod = (3.3 * syx) / Math.abs(m); const loq = (10 * syx) / Math.abs(m); lodText.textContent = lod.toFixed(4); loqText.textContent = loq.toFixed(4); } else { lodText.textContent = 'Error'; loqText.textContent = 'Error'; } } } else { slopeText.textContent = '-'; sdText.textContent = '-'; lodText.textContent = '-'; loqText.textContent = '-'; rsquaredText.textContent = '-'; interpretationText.textContent = ''; downloadBtn.classList.add('hidden'); } } else { regressionParams[id] = {}; chart.data.datasets[1].data = []; slopeText.textContent = '-'; sdText.textContent = '-'; lodText.textContent = '-'; loqText.textContent = '-'; rsquaredText.textContent = '-'; interpretationText.textContent = ''; downloadBtn.classList.add('hidden'); } chart.update(); }
+        function updateCalibrationCheck() { const id = 'calibration'; const chart = calibrationChart; const dataStore = calibrationData; const equationText = document.getElementById(`${id}-equation-text`); const rsquaredText = document.getElementById(`${id}-rsquared-text`); const interpretationText = document.getElementById(`${id}-interpretation-text`); const downloadBtn = document.getElementById(`${id}-download-btn`); if (!chart) return; chart.data.datasets[0].data = dataStore; if (dataStore.length > 2) { const { m, c, rSquared } = calculateLinearRegression(id); regressionParams[id] = { m, c, rSquared }; const xValues = dataStore.map(p => p.x); chart.data.datasets[1].data = [ { x: Math.min(...xValues), y: m * Math.min(...xValues) + c }, { x: Math.max(...xValues), y: m * Math.max(...xValues) + c } ]; if (!isNaN(m) && !isNaN(c) && !isNaN(rSquared)) { equationText.textContent = `y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; rsquaredText.textContent = rSquared.toFixed(5); if (rSquared >= 0.995) { interpretationText.textContent = 'Excellent linearity. Calibration is acceptable.'; interpretationText.style.color = '#dcfce7'; } else if (rSquared >= 0.990) { interpretationText.textContent = 'Good linearity. Calibration may be acceptable.'; interpretationText.style.color = '#fef9c3'; } else { interpretationText.textContent = 'Poor linearity. Check standards and repeat measurements.'; interpretationText.style.color = '#fee2e2'; } downloadBtn.classList.remove('hidden'); } } else { regressionParams[id] = {}; chart.data.datasets[1].data = []; equationText.textContent = '-'; rsquaredText.textContent = '-'; interpretationText.textContent = ''; downloadBtn.classList.add('hidden'); } chart.update(); }
+        function updateChart(id) { const chart = (id === 'nitrate') ? nitrateChart : sulphateChart; if (!chart) return; const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; const qaqcOutput = document.getElementById(`${id}-qaqc-output`); const lodText = document.getElementById(`${id}-lod-text`); const loqText = document.getElementById(`${id}-loq-text`); chart.data.datasets[0].data = dataStore; if (dataStore.length > 2) { const { m, c, syx } = calculateLinearRegression(id); regressionParams[id] = { m, c }; const xValues = dataStore.map(p => p.x); chart.data.datasets[1].data = [ { x: Math.min(...xValues), y: m * Math.min(...xValues) + c }, { x: Math.max(...xValues), y: m * Math.max(...xValues) + c } ]; if (!isNaN(m) && !isNaN(syx) && m !== 0) { const lod = (3.3 * syx) / Math.abs(m); const loq = (10 * syx) / Math.abs(m); lodText.textContent = `${lod.toFixed(4)}`; loqText.textContent = `${loq.toFixed(4)}`; qaqcOutput.classList.remove('hidden'); } else { qaqcOutput.classList.add('hidden'); } } else { regressionParams[id] = {}; chart.data.datasets[1].data = []; qaqcOutput.classList.add('hidden'); } document.getElementById(`${id}-result-output`).classList.add('hidden'); document.getElementById(`${id}-download-btn`).classList.add('hidden'); document.getElementById(`${id}-unknown-abs`).value = ''; if(configs[id] && configs[id].method === 'dual_wavelength') { document.getElementById(`${id}-unknown-abs2`).value = ''; } chart.update(); }
+        function calculateStandardDeviation(data) { const n = data.length; if (n <= 1) return 0; const mean = data.reduce((a, b) => a + b) / n; const sumOfSquaredDifferences = data.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0); const variance = sumOfSquaredDifferences / (n - 1); return Math.sqrt(variance); }
+        function calculateAndDisplayStdDev(type) { const textarea = document.getElementById(`${type}-pilot-data`); const dataString = textarea.value; const dataArray = dataString.split(',').map(Number).filter(n => !isNaN(n) && n !== null); const resultContainer = document.getElementById(`${type}-pilot-result`); const resultText = document.getElementById(`${type}-pilot-result-text`); if (dataArray.length > 1) { const stdDev = calculateStandardDeviation(dataArray); const mean = dataArray.reduce((a, b) => a + b) / dataArray.length; resultText.innerHTML = `Mean: ${mean.toFixed(4)}<br><b>Std Dev (σ): ${stdDev.toFixed(4)}</b>`; resultContainer.classList.remove('hidden'); } else { resultText.textContent = 'Enter at least 2 valid numbers.'; resultContainer.classList.remove('hidden'); } }
+        function useCalculatedStdDev(type) { const resultText = document.getElementById(`${type}-pilot-result-text`).innerText; try { const stdDevValue = parseFloat(resultText.split('Std Dev (σ): ')[1]); if (!isNaN(stdDevValue)) { document.getElementById(`${type}-std-dev`).value = stdDevValue.toFixed(4); } } catch(e) { console.error("Could not parse standard deviation value."); } }
+        function updateWeighingFormula() { const unit = document.getElementById('weigh-concentration-unit').value; const formulaDisplay = document.getElementById('weighing-formula-display'); const equivalenceFactorContainer = document.getElementById('weigh-equivalence-factor-container'); if (!formulaDisplay || !equivalenceFactorContainer) return; if (unit === 'M') { formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = Conc (mol/L) &times; Vol (L) &times; Molar Mass'; equivalenceFactorContainer.classList.add('hidden'); } else if (unit === 'N') { formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = (Normality / n) &times; Vol (L) &times; Molar Mass'; equivalenceFactorContainer.classList.remove('hidden'); } else if (unit === 'ppm') { formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = [ppm (mg/L) &times; Vol (L)] / 1000'; equivalenceFactorContainer.classList.add('hidden'); } }
+        function calculateWeighing() { const molarMass = parseFloat(document.getElementById('weigh-molar-mass').value); const concentration = parseFloat(document.getElementById('weigh-concentration').value); const volumeMl = parseFloat(document.getElementById('weigh-volume').value); const unit = document.getElementById('weigh-concentration-unit').value; const equivalenceFactor = parseFloat(document.getElementById('weigh-equivalence-factor').value); const resultOutput = document.getElementById('weighing-result-output'); const resultText = document.getElementById('weighing-result-text'); if (isNaN(concentration) || isNaN(volumeMl) || volumeMl <= 0 || concentration < 0) { resultText.textContent = 'Invalid Input'; resultOutput.classList.remove('hidden'); return; } let mass = NaN; const volumeL = volumeMl / 1000; if (unit === 'M') { if (isNaN(molarMass) || molarMass <= 0) { resultText.textContent = 'Invalid Molar Mass'; resultOutput.classList.remove('hidden'); return; } mass = concentration * volumeL * molarMass; } else if (unit === 'N') { if (isNaN(molarMass) || isNaN(equivalenceFactor) || molarMass <= 0 || equivalenceFactor <= 0) { resultText.textContent = 'Invalid Molar Mass or Equiv. Factor'; resultOutput.classList.remove('hidden'); return; } const molarity = concentration / equivalenceFactor; mass = molarity * volumeL * molarMass; } else if (unit === 'ppm') { mass = (concentration * volumeL) / 1000; } if (isNaN(mass)) { resultText.textContent = 'Calculation Error'; } else { resultText.textContent = `${mass.toFixed(4)} g`; } resultOutput.classList.remove('hidden'); }
+        function calculateSampleSize() { const z = parseFloat(document.getElementById('ss-confidence').value); const e = parseFloat(document.getElementById('ss-margin-error').value); let p = parseFloat(document.getElementById('ss-std-dev').value); const N = document.getElementById('ss-population').value ? parseFloat(document.getElementById('ss-population').value) : null; const resultOutput = document.getElementById('samplesize-result-output'); const resultText = document.getElementById('samplesize-result-text'); if (isNaN(z) || isNaN(e) || isNaN(p) || e <= 0 || p < 0 ) { resultText.textContent = 'Invalid Input'; resultOutput.classList.remove('hidden'); return; } let n0; if (p > 1) { n0 = (Math.pow(z, 2) * Math.pow(p, 2)) / Math.pow(e, 2); } else { n0 = (Math.pow(z, 2) * p * (1 - p)) / Math.pow(e, 2); } let final_n = n0; if (N && N > 0) { final_n = n0 / (1 + ((n0 - 1) / N)); } resultText.textContent = Math.ceil(final_n); resultOutput.classList.remove('hidden'); }
+        function calculateSamplingError() { const z = parseFloat(document.getElementById('se-confidence').value); const n = parseFloat(document.getElementById('se-sample-size').value); let p = parseFloat(document.getElementById('se-std-dev').value); const N = document.getElementById('se-population').value ? parseFloat(document.getElementById('se-population').value) : null; const resultOutput = document.getElementById('samplingerror-result-output'); const resultText = document.getElementById('samplingerror-result-text'); if (isNaN(z) || isNaN(n) || isNaN(p) || n <= 0 || p < 0) { resultText.textContent = 'Invalid Input'; resultOutput.classList.remove('hidden'); return; } let error; let fpc = 1; if (N && N > 0 && n < N) { fpc = Math.sqrt((N - n) / (N - 1)); } if (p > 1) { error = z * (p / Math.sqrt(n)) * fpc; } else { error = z * Math.sqrt((p * (1 - p)) / n) * fpc; } resultText.textContent = `±${error.toFixed(4)}`; if (p <= 1) { resultText.textContent += ` (or ${(error * 100).toFixed(2)}%)`; } resultOutput.classList.remove('hidden'); }
+        function calculateDilution() { const c1 = parseFloat(document.getElementById('dilute-c1').value); const c2 = parseFloat(document.getElementById('dilute-c2').value); const v2 = parseFloat(document.getElementById('dilute-v2').value); const resultOutput = document.getElementById('dilution-result-output'); const resultText = document.getElementById('dilution-result-text'); if (isNaN(c1) || isNaN(c2) || isNaN(v2) || c1 <= 0 || c2 < 0 || v2 <= 0 || c2 > c1) { resultText.textContent = 'Invalid Input'; if (c2 > c1) resultText.textContent = "Final conc. > stock conc."; resultOutput.classList.remove('hidden'); return; } const v1 = (c2 * v2) / c1; resultText.textContent = `${v1.toFixed(3)} units of volume`; resultOutput.classList.remove('hidden'); }
+        function calculateLinearRegression(id) { let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else if (id === 'calibration') dataStore = calibrationData; else if (id === 'lodloq') dataStore = lodLoqData; else return {}; const n = dataStore.length; if (n < 3) return { m: NaN, c: NaN, syx: NaN, rSquared: NaN }; let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0; dataStore.forEach(p => { sumX += p.x; sumY += p.y; sumXY += p.x * p.y; sumX2 += p.x * p.x; }); const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX); const c = (sumY - m * sumX) / n; let sumOfSquaresOfResiduals = 0; dataStore.forEach(p => { sumOfSquaresOfResiduals += Math.pow(p.y - (m * p.x + c), 2); }); const syx = Math.sqrt(sumOfSquaresOfResiduals / (n - 2)); const meanY = sumY / n; const ssTot = dataStore.reduce((acc, p) => acc + Math.pow(p.y - meanY, 2), 0); const rSquared = ssTot === 0 ? 1 : 1 - (sumOfSquaresOfResiduals / ssTot); return { m, c, syx, rSquared }; }
+        function calculateResult(id) { const config = configs[id]; if (config.type === 'survey') calculateMacroDebrisDensity(id); else if (config.type === 'io_ratio') calculateIORatio(id); else if (config.type === 'gravimetric') calculateGravimetricResult(id); else if (config.type === 'calibration') calculateCalibrationResult(id); }
+        function calculateGravimetricResult(id) { const initialWeight = parseFloat(document.getElementById(`${id}-initial-weight-input`).value); const finalWeight = parseFloat(document.getElementById(`${id}-final-weight-input`).value); const flowRate = parseFloat(document.getElementById(`${id}-flow-rate-input`).value); const duration = parseFloat(document.getElementById(`${id}-duration-input`).value); const resultOutput = document.getElementById(`${id}-result-output`); const massText = document.getElementById(`${id}-mass-text`); const volumeText = document.getElementById(`${id}-volume-text`); const resultText = document.getElementById(`${id}-result-text`); const downloadBtn = document.getElementById(`${id}-download-btn`); if (isNaN(initialWeight) || isNaN(finalWeight) || isNaN(flowRate) || isNaN(duration) || flowRate <= 0 || duration <= 0 || finalWeight < initialWeight) { resultText.textContent = 'Error: Invalid Input'; massText.textContent = '-'; volumeText.textContent = '-'; resultOutput.classList.remove('hidden'); downloadBtn.classList.add('hidden'); return; } const massMg = finalWeight - initialWeight; const massUg = massMg * 1000; const durationMin = duration * 60; const totalVolumeM3 = flowRate * durationMin; const concentration = massUg / totalVolumeM3; massText.textContent = `${massMg.toFixed(2)} mg`; volumeText.textContent = `${totalVolumeM3.toFixed(2)} m³`; resultText.textContent = `${concentration.toFixed(2)} ${configs[id].units}`; resultOutput.classList.remove('hidden'); downloadBtn.classList.remove('hidden'); }
+        function calculateIORatio(id) { const indoor = parseFloat(document.getElementById(`${id}-indoor-input`).value); const outdoor = parseFloat(document.getElementById(`${id}-outdoor-input`).value); const resultOutput = document.getElementById(`${id}-result-output`); const resultText = document.getElementById(`${id}-result-text`); const interpretationText = document.getElementById(`${id}-interpretation-text`); const downloadBtn = document.getElementById(`${id}-download-btn`); if (isNaN(indoor) || isNaN(outdoor) || outdoor === 0) { resultText.textContent = 'Error'; interpretationText.textContent = 'Please enter valid indoor and outdoor values. Outdoor value cannot be zero.'; resultOutput.classList.remove('hidden'); downloadBtn.classList.add('hidden'); return; } const ratio = indoor / outdoor; resultText.textContent = ratio.toFixed(3); if (ratio > 1) { interpretationText.textContent = "Ratio > 1: Indoor levels are higher than outdoor, suggesting potential indoor sources or poor ventilation."; } else if (ratio < 1) { interpretationText.textContent = "Ratio < 1: Indoor levels are lower than outdoor, suggesting the building provides some shielding or insulation."; } else { interpretationText.textContent = "Ratio = 1: Indoor and outdoor levels are equivalent."; } resultOutput.classList.remove('hidden'); downloadBtn.classList.remove('hidden'); }
+        function calculateMacroDebrisDensity(id) { const config = configs[id]; const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; const area = length * width; const areaDisplay = document.getElementById(`${id}-area-display`); if (areaDisplay) areaDisplay.textContent = area; if (area === 0) return; const results = config.categories.map(cat => { const count = parseInt(document.getElementById(`${id}-${cat.toLowerCase()}-input`).value) || 0; return { category: cat, count: count, concentration: count / area }; }); const tableBody = document.getElementById(`${id}-results-table`); if(tableBody) { if (results.every(r => r.count === 0)) { tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-400">Enter debris counts to see results.</td></tr>`; } else { tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join(''); } } if(macrodebrisChart) { macrodebrisChart.data.labels = results.map(r => r.category); macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); macrodebrisChart.update(); } const downloadBtn = document.getElementById(`${id}-download-btn`); if(downloadBtn) downloadBtn.classList.remove('hidden'); }
+        function calculateCalibrationResult(id) { let dataStore; if (id === 'nitrate') dataStore = nitrateData; else if (id === 'sulphate') dataStore = sulphateData; else return; const config = configs[id]; const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); let finalUnknownAbs = parseFloat(unknownAbsInput.value); if (config.method === 'dual_wavelength') { const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; finalUnknownAbs -= (2 * unknownAbs2); } else if (isNaN(finalUnknownAbs)) return; if (dataStore.length < 3) return; const { m, c } = regressionParams[id]; if (isNaN(m) || isNaN(c)) return; const concentration = (finalUnknownAbs - c) / m; document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; document.getElementById(`${id}-result-output`).classList.remove('hidden'); document.getElementById(`${id}-download-btn`).classList.remove('hidden'); }
+        function downloadResults(id) { const config = configs[id]; let fileContent = `--- Environmental Analysis Lab Results ---\n\nExperiment: ${config.title}\nDate: ${new Date().toLocaleString()}\n\n`; if (config.type === 'survey') { const length = document.getElementById(`${id}-length-input`).value; const width = document.getElementById(`${id}-width-input`).value; const area = document.getElementById(`${id}-area-display`).textContent; fileContent += `--- Survey Area ---\nLength: ${length} m\nWidth: ${width} m\nTotal Area: ${area} m²\n\n--- Debris Count & Density ---\n`; fileContent += `Category\t\tCount\t\tDensity (items/m²)\n----------------------------------------------------------\n`; config.categories.forEach(cat => { const count = document.getElementById(`${id}-${cat.toLowerCase()}-input`).value || 0; const density = (parseFloat(count) / parseFloat(area)).toFixed(5); fileContent += `${cat.padEnd(16)}${count}\t\t${density}\n`; }); } else if (config.type === 'lod_loq_check') { const dataStore = lodLoqData; fileContent += `--- Calibration Data ---\n`; fileContent += `Concentration\tInstrument Response\n------------------------------------\n`; dataStore.forEach(p => { fileContent += `${p.x.toFixed(4)}\t\t${p.y.toFixed(4)}\n`; }); fileContent += `\n--- Detection Limit Analysis ---\n`; const { m, syx, rSquared } = regressionParams.lodloq || {}; if (!isNaN(m)) { fileContent += `R-Squared (R²): ${rSquared.toFixed(5)}\n`; fileContent += `Linearity Check: ${document.getElementById('lodloq-interpretation-text').textContent}\n\n`; fileContent += `Slope (m): ${m.toFixed(4)}\n`; fileContent += `Standard Deviation of Residuals (S_y/x): ${syx.toFixed(4)}\n\n`; if (rSquared >= 0.99) { fileContent += `Limit of Detection (LOD): ${document.getElementById('lodloq-lod-text').textContent}\n`; fileContent += `Limit of Quantitation (LOQ): ${document.getElementById('lodloq-loq-text').textContent}\n`; } else { fileContent += `LOD/LOQ not estimated due to poor linearity.\n`; } } else { fileContent += `Analysis not performed (not enough data points).\n`; } } else if (config.type === 'calibration_check') { const dataStore = calibrationData; fileContent += `--- Calibration Data ---\n`; fileContent += `Concentration\tInstrument Response\n------------------------------------\n`; dataStore.forEach(p => { fileContent += `${p.x.toFixed(4)}\t\t${p.y.toFixed(4)}\n`; }); fileContent += `\n--- Regression Analysis ---\n`; const { m, c, rSquared } = regressionParams.calibration || {}; if (!isNaN(m)) { fileContent += `Regression Equation: y = ${m.toFixed(4)}x + ${c.toFixed(4)}\n`; fileContent += `R-Squared (R²): ${rSquared.toFixed(5)}\n`; fileContent += `Interpretation: ${document.getElementById('calibration-interpretation-text').textContent}\n`; } else { fileContent += `Analysis not performed (not enough data points).\n`; } } else if (config.type === 'gravimetric') { const initialWeight = document.getElementById(`${id}-initial-weight-input`).value; const finalWeight = document.getElementById(`${id}-final-weight-input`).value; const flowRate = document.getElementById(`${id}-flow-rate-input`).value; const duration = document.getElementById(`${id}-duration-input`).value; const mass = document.getElementById(`${id}-mass-text`).textContent; const volume = document.getElementById(`${id}-volume-text`).textContent; const concentration = document.getElementById(`${id}-result-text`).textContent; fileContent += `--- Data ---\n`; fileContent += `Initial Filter Weight: ${initialWeight} mg\n`; fileContent += `Final Filter Weight: ${finalWeight} mg\n`; fileContent += `Average Flow Rate: ${flowRate} m³/min\n`; fileContent += `Sampling Duration: ${duration} hours\n\n`; fileContent += `--- Calculations ---\n`; fileContent += `Total Particulate Mass: ${mass}\n`; fileContent += `Total Air Volume Sampled: ${volume}\n\n`; fileContent += `--- FINAL RESULT ---\n`; fileContent += `Total Suspended Particulates (TSP) Concentration: ${concentration}\n`; } else if (config.type === 'io_ratio') { const indoor = document.getElementById(`${id}-indoor-input`).value; const outdoor = document.getElementById(`${id}-outdoor-input`).value; const ratio = document.getElementById(`${id}-result-text`).textContent; const interpretation = document.getElementById(`${id}-interpretation-text`).textContent; fileContent += `--- Data ---\n`; fileContent += `Indoor Reading: ${indoor} ${config.units}\n`; fileContent += `Outdoor Reading: ${outdoor} ${config.units}\n\n`; fileContent += `--- FINAL RESULT ---\n`; fileContent += `I/O Ratio: ${ratio}\n`; fileContent += `Interpretation: ${interpretation}\n`; } else { const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; fileContent += `--- Calibration Data ---\n`; if (config.method === 'dual_wavelength') { fileContent += `Conc. (${config.units})\tAbs (220nm)\tAbs (275nm)\tCorrected Abs\n----------------------------------------------------------\n`; dataStore.forEach(p => { fileContent += `${p.conc.toFixed(2)}\t\t\t${p.abs220.toFixed(4)}\t\t${p.abs275.toFixed(4)}\t\t${p.y.toFixed(4)}\n`; }); } else { fileContent += `Concentration (${config.units})\tAbsorbance\n------------------------------------\n`; dataStore.forEach(p => { fileContent += `${p.x.toFixed(2)}\t\t\t\t${p.y.toFixed(4)}\n`; }); } fileContent += `\n--- Analysis ---\n`; const { m, c } = regressionParams[id] || {}; if (!isNaN(m)) fileContent += `Regression Line: y = ${m.toFixed(4)}x + ${c.toFixed(4)}\n`; const qaqcOutput = document.getElementById(`${id}-qaqc-output`); if (qaqcOutput && !qaqcOutput.classList.contains('hidden')) { const lod = document.getElementById(`${id}-lod-text`).textContent; const loq = document.getElementById(`${id}-loq-text`).textContent; fileContent += `Limit of Detection (LOD): ${lod} ${config.units}\n`; fileContent += `Limit of Quantitation (LOQ): ${loq} ${config.units}\n`; } fileContent += `\n--- FINAL RESULT ---\n`; const resultOutput = document.getElementById(`${id}-result-output`); const resultText = document.getElementById(`${id}-result-text`).textContent; if (resultOutput && resultOutput.classList.contains('hidden')) { fileContent += `Concentration of Unknown Sample: Not calculated.\n`; } else { fileContent += `Concentration of Unknown Sample: ${resultText}\n`; } } const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); const url = URL.createObjectURL(blob); link.setAttribute('href', url); link.setAttribute('download', `${config.id.charAt(0).toUpperCase() + config.id.slice(1)}_Results.txt`); document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
 
-            const resultContainer = document.getElementById(`${type}-pilot-result`);
-            const resultText = document.getElementById(`${type}-pilot-result-text`);
-
-            if (dataArray.length > 1) {
-                const stdDev = calculateStandardDeviation(dataArray);
-                const mean = dataArray.reduce((a, b) => a + b) / dataArray.length;
-                resultText.innerHTML = `Mean: ${mean.toFixed(4)}<br><b>Std Dev (σ): ${stdDev.toFixed(4)}</b>`;
-                resultContainer.classList.remove('hidden');
-            } else {
-                resultText.textContent = 'Enter at least 2 valid numbers.';
-                resultContainer.classList.remove('hidden');
-            }
-        }
-
-        function useCalculatedStdDev(type) {
-            const resultText = document.getElementById(`${type}-pilot-result-text`).innerText;
-            try {
-                const stdDevValue = parseFloat(resultText.split('Std Dev (σ): ')[1]);
-                 if (!isNaN(stdDevValue)) {
-                    document.getElementById(`${type}-std-dev`).value = stdDevValue.toFixed(4);
-                }
-            } catch(e) {
-                console.error("Could not parse standard deviation value.");
-            }
-        }
-        
-        function updateWeighingFormula() {
-            const unit = document.getElementById('weigh-concentration-unit').value;
-            const formulaDisplay = document.getElementById('weighing-formula-display');
-            const equivalenceFactorContainer = document.getElementById('weigh-equivalence-factor-container');
-
-            if (!formulaDisplay || !equivalenceFactorContainer) return;
-
-            if (unit === 'M') {
-                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = Conc (mol/L) &times; Vol (L) &times; Molar Mass';
-                equivalenceFactorContainer.classList.add('hidden');
-            } else if (unit === 'N') {
-                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = (Normality / n) &times; Vol (L) &times; Molar Mass';
-                equivalenceFactorContainer.classList.remove('hidden');
-            } else if (unit === 'ppm') {
-                formulaDisplay.innerHTML = '<strong>Mass (g)</strong> = [ppm (mg/L) &times; Vol (L)] / 1000';
-                equivalenceFactorContainer.classList.add('hidden');
-            }
-        }
-
-        function calculateWeighing() {
-            const molarMass = parseFloat(document.getElementById('weigh-molar-mass').value);
-            const concentration = parseFloat(document.getElementById('weigh-concentration').value);
-            const volumeMl = parseFloat(document.getElementById('weigh-volume').value);
-            const unit = document.getElementById('weigh-concentration-unit').value;
-            const equivalenceFactor = parseFloat(document.getElementById('weigh-equivalence-factor').value);
-            
-            const resultOutput = document.getElementById('weighing-result-output');
-            const resultText = document.getElementById('weighing-result-text');
-
-            if (isNaN(concentration) || isNaN(volumeMl) || volumeMl <= 0 || concentration < 0) {
-                 resultText.textContent = 'Invalid Input';
-                 resultOutput.classList.remove('hidden');
-                 return;
-            }
-
-            let mass = NaN;
-            const volumeL = volumeMl / 1000;
-
-            if (unit === 'M') {
-                if (isNaN(molarMass) || molarMass <= 0) {
-                     resultText.textContent = 'Invalid Molar Mass';
-                     resultOutput.classList.remove('hidden');
-                     return;
-                }
-                mass = concentration * volumeL * molarMass;
-            } else if (unit === 'N') {
-                 if (isNaN(molarMass) || isNaN(equivalenceFactor) || molarMass <= 0 || equivalenceFactor <= 0) {
-                     resultText.textContent = 'Invalid Molar Mass or Equiv. Factor';
-                     resultOutput.classList.remove('hidden');
-                     return;
-                 }
-                const molarity = concentration / equivalenceFactor;
-                mass = molarity * volumeL * molarMass;
-            } else if (unit === 'ppm') {
-                // ppm = mg/L. mass (mg) = ppm * volume (L). mass (g) = (ppm * volume (L))/1000
-                mass = (concentration * volumeL) / 1000;
-            }
-
-            if (isNaN(mass)) {
-                resultText.textContent = 'Calculation Error';
-            } else {
-                resultText.textContent = `${mass.toFixed(4)} g`;
-            }
-            resultOutput.classList.remove('hidden');
-        }
-        
-        function calculateSampleSize() {
-            const z = parseFloat(document.getElementById('ss-confidence').value);
-            const e = parseFloat(document.getElementById('ss-margin-error').value);
-            let p = parseFloat(document.getElementById('ss-std-dev').value); // Can be proportion or std dev
-            const N = document.getElementById('ss-population').value ? parseFloat(document.getElementById('ss-population').value) : null;
-            
-            const resultOutput = document.getElementById('samplesize-result-output');
-            const resultText = document.getElementById('samplesize-result-text');
-
-            if (isNaN(z) || isNaN(e) || isNaN(p) || e <= 0 || p < 0 ) {
-                resultText.textContent = 'Invalid Input';
-                resultOutput.classList.remove('hidden');
-                return;
-            }
-
-            // If p > 1, assume it's std dev (σ), otherwise assume it's proportion
-            let n0;
-            if (p > 1) { // Cochran's formula for continuous data
-                n0 = (Math.pow(z, 2) * Math.pow(p, 2)) / Math.pow(e, 2);
-            } else { // Cochran's formula for proportions
-                 n0 = (Math.pow(z, 2) * p * (1 - p)) / Math.pow(e, 2);
-            }
-
-            let final_n = n0;
-            // Finite Population Correction
-            if (N && N > 0) {
-                final_n = n0 / (1 + ((n0 - 1) / N));
-            }
-
-            resultText.textContent = Math.ceil(final_n);
-            resultOutput.classList.remove('hidden');
-        }
-
-        function calculateSamplingError() {
-            const z = parseFloat(document.getElementById('se-confidence').value);
-            const n = parseFloat(document.getElementById('se-sample-size').value);
-            let p = parseFloat(document.getElementById('se-std-dev').value); // Can be proportion or std dev
-            const N = document.getElementById('se-population').value ? parseFloat(document.getElementById('se-population').value) : null;
-
-            const resultOutput = document.getElementById('samplingerror-result-output');
-            const resultText = document.getElementById('samplingerror-result-text');
-
-            if (isNaN(z) || isNaN(n) || isNaN(p) || n <= 0 || p < 0) {
-                resultText.textContent = 'Invalid Input';
-                resultOutput.classList.remove('hidden');
-                return;
-            }
-
-            let error;
-            let fpc = 1;
-            // Finite Population Correction
-            if (N && N > 0 && n < N) {
-                fpc = Math.sqrt((N - n) / (N - 1));
-            }
-
-            // If p > 1, assume it's std dev (σ), otherwise assume it's proportion
-            if (p > 1) { // Formula for continuous data
-                error = z * (p / Math.sqrt(n)) * fpc;
-            } else { // Formula for proportions
-                error = z * Math.sqrt((p * (1 - p)) / n) * fpc;
-            }
-            
-            resultText.textContent = `±${error.toFixed(4)}`;
-            if (p <= 1) {
-                 resultText.textContent += ` (or ${(error * 100).toFixed(2)}%)`;
-            }
-            resultOutput.classList.remove('hidden');
-        }
-
-
-        function calculateDilution() {
-            const c1 = parseFloat(document.getElementById('dilute-c1').value);
-            const c2 = parseFloat(document.getElementById('dilute-c2').value);
-            const v2 = parseFloat(document.getElementById('dilute-v2').value);
-            const resultOutput = document.getElementById('dilution-result-output');
-            const resultText = document.getElementById('dilution-result-text');
-
-            if (isNaN(c1) || isNaN(c2) || isNaN(v2) || c1 <= 0 || c2 < 0 || v2 <= 0 || c2 > c1) {
-                resultText.textContent = 'Invalid Input';
-                 if (c2 > c1) resultText.textContent = "Final conc. > stock conc.";
-                resultOutput.classList.remove('hidden');
-                return;
-            }
-
-            const v1 = (c2 * v2) / c1;
-            resultText.textContent = `${v1.toFixed(3)} units of volume`;
-            resultOutput.classList.remove('hidden');
-        }
-        
-        function calculateLinearRegression(id) { 
-            let dataStore;
-            if (id === 'nitrate') dataStore = nitrateData;
-            else if (id === 'sulphate') dataStore = sulphateData;
-            else if (id === 'calibration') dataStore = calibrationData;
-            else if (id === 'lodloq') dataStore = lodLoqData;
-            else return {};
-
-            const n = dataStore.length; 
-            if (n < 3) return { m: NaN, c: NaN, syx: NaN, rSquared: NaN }; 
-            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0; 
-            dataStore.forEach(p => { sumX += p.x; sumY += p.y; sumXY += p.x * p.y; sumX2 += p.x * p.x; }); 
-            const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX); 
-            const c = (sumY - m * sumX) / n; 
-            let sumOfSquaresOfResiduals = 0; 
-            dataStore.forEach(p => { sumOfSquaresOfResiduals += Math.pow(p.y - (m * p.x + c), 2); }); 
-            const syx = Math.sqrt(sumOfSquaresOfResiduals / (n - 2)); 
-            
-            const meanY = sumY / n;
-            const ssTot = dataStore.reduce((acc, p) => acc + Math.pow(p.y - meanY, 2), 0);
-            const rSquared = ssTot === 0 ? 1 : 1 - (sumOfSquaresOfResiduals / ssTot);
-
-            return { m, c, syx, rSquared }; 
-        }
-
-        function calculateResult(id) {
-            const config = configs[id];
-            if (config.type === 'survey') calculateMacroDebrisDensity(id);
-            else if (config.type === 'io_ratio') calculateIORatio(id);
-            else if (config.type === 'gravimetric') calculateGravimetricResult(id);
-            else if (config.type === 'calibration' || config.type === 'calibration_check' || config.type === 'lod_loq_check') calculateCalibrationResult(id);
-        }
-
-        function calculateGravimetricResult(id) {
-            const initialWeight = parseFloat(document.getElementById(`${id}-initial-weight-input`).value);
-            const finalWeight = parseFloat(document.getElementById(`${id}-final-weight-input`).value);
-            const flowRate = parseFloat(document.getElementById(`${id}-flow-rate-input`).value);
-            const duration = parseFloat(document.getElementById(`${id}-duration-input`).value);
-
-            const resultOutput = document.getElementById(`${id}-result-output`);
-            const massText = document.getElementById(`${id}-mass-text`);
-            const volumeText = document.getElementById(`${id}-volume-text`);
-            const resultText = document.getElementById(`${id}-result-text`);
-            const downloadBtn = document.getElementById(`${id}-download-btn`);
-
-            if (isNaN(initialWeight) || isNaN(finalWeight) || isNaN(flowRate) || isNaN(duration) || flowRate <= 0 || duration <= 0 || finalWeight < initialWeight) {
-                resultText.textContent = 'Error: Invalid Input';
-                massText.textContent = '-';
-                volumeText.textContent = '-';
-                resultOutput.classList.remove('hidden');
-                downloadBtn.classList.add('hidden');
-                return;
-            }
-
-            const massMg = finalWeight - initialWeight;
-            const massUg = massMg * 1000;
-            const durationMin = duration * 60;
-            const totalVolumeM3 = flowRate * durationMin;
-            const concentration = massUg / totalVolumeM3;
-
-            massText.textContent = `${massMg.toFixed(2)} mg`;
-            volumeText.textContent = `${totalVolumeM3.toFixed(2)} m³`;
-            resultText.textContent = `${concentration.toFixed(2)} ${configs[id].units}`;
-
-            resultOutput.classList.remove('hidden');
-            downloadBtn.classList.remove('hidden');
-        }
-
-        function calculateIORatio(id) {
-            const indoor = parseFloat(document.getElementById(`${id}-indoor-input`).value);
-            const outdoor = parseFloat(document.getElementById(`${id}-outdoor-input`).value);
-            const resultOutput = document.getElementById(`${id}-result-output`);
-            const resultText = document.getElementById(`${id}-result-text`);
-            const interpretationText = document.getElementById(`${id}-interpretation-text`);
-            const downloadBtn = document.getElementById(`${id}-download-btn`);
-
-            if (isNaN(indoor) || isNaN(outdoor) || outdoor === 0) {
-                resultText.textContent = 'Error';
-                interpretationText.textContent = 'Please enter valid indoor and outdoor values. Outdoor value cannot be zero.';
-                resultOutput.classList.remove('hidden');
-                downloadBtn.classList.add('hidden');
-                return;
-            }
-
-            const ratio = indoor / outdoor;
-            resultText.textContent = ratio.toFixed(3);
-            
-            if (ratio > 1) {
-                interpretationText.textContent = "Ratio > 1: Indoor levels are higher than outdoor, suggesting potential indoor sources or poor ventilation.";
-            } else if (ratio < 1) {
-                interpretationText.textContent = "Ratio < 1: Indoor levels are lower than outdoor, suggesting the building provides some shielding or insulation.";
-            } else {
-                interpretationText.textContent = "Ratio = 1: Indoor and outdoor levels are equivalent.";
-            }
-
-            resultOutput.classList.remove('hidden');
-            downloadBtn.classList.remove('hidden');
-        }
-        
-        function calculateMacroDebrisDensity(id) { 
-            const config = configs[id]; 
-            const length = parseFloat(document.getElementById(`${id}-length-input`).value) || 0; 
-            const width = parseFloat(document.getElementById(`${id}-width-input`).value) || 0; 
-            const area = length * width; 
-            const areaDisplay = document.getElementById(`${id}-area-display`);
-            if (areaDisplay) areaDisplay.textContent = area; 
-            if (area === 0) return; 
-
-            const results = config.categories.map(cat => { 
-                const count = parseInt(document.getElementById(`${id}-${cat.toLowerCase()}-input`).value) || 0; 
-                return { category: cat, count: count, concentration: count / area }; 
-            }); 
-            
-            const tableBody = document.getElementById(`${id}-results-table`); 
-            if(tableBody) {
-                if (results.every(r => r.count === 0)) {
-                    tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-400">Enter debris counts to see results.</td></tr>`;
-                } else {
-                    tableBody.innerHTML = results.map(r => ` <tr class="bg-white border-b"> <td class="px-4 py-3 font-medium">${r.category}</td> <td class="px-4 py-3">${r.count}</td> <td class="px-4 py-3">${r.concentration.toFixed(4)}</td> </tr>`).join('');
-                }
-            }
-             
-            if(macrodebrisChart) { 
-                macrodebrisChart.data.labels = results.map(r => r.category); 
-                macrodebrisChart.data.datasets[0].data = results.map(r => r.concentration); 
-                macrodebrisChart.update(); 
-            } 
-            
-            const downloadBtn = document.getElementById(`${id}-download-btn`);
-            if(downloadBtn) downloadBtn.classList.remove('hidden'); 
-        }
-
-        function calculateCalibrationResult(id) { 
-            const dataStore = (id === 'nitrate') ? nitrateData : sulphateData; 
-            const config = configs[id]; 
-            const unknownAbsInput = document.getElementById(`${id}-unknown-abs`); 
-            let finalUnknownAbs = parseFloat(unknownAbsInput.value); 
-            if (config.method === 'dual_wavelength') { 
-                const unknownAbs2 = parseFloat(document.getElementById(`${id}-unknown-abs2`).value); 
-                if (isNaN(finalUnknownAbs) || isNaN(unknownAbs2)) return; 
-                finalUnknownAbs -= (2 * unknownAbs2); 
-            } else if (isNaN(finalUnknownAbs)) return; 
-            if (dataStore.length < 3) return; 
-            const { m, c } = regressionParams[id]; 
-            if (isNaN(m) || isNaN(c)) return; 
-            const concentration = (finalUnknownAbs - c) / m; 
-            document.getElementById(`${id}-result-text`).textContent = `${concentration.toFixed(3)} ${config.units}`; 
-            document.getElementById(`${id}-equation-text`).textContent = `Using equation y = ${m.toFixed(4)}x + ${c.toFixed(4)}`; 
-            document.getElementById(`${id}-result-output`).classList.remove('hidden'); 
-            document.getElementById(`${id}-download-btn`).classList.remove('hidden'); 
-        }
-        
-        function downloadResults(id) {
-            const config = configs[id];
-            let fileContent = `--- Environmental Analysis Lab Results ---\n\nExperiment: ${config.title}\nDate: ${new Date().toLocaleString()}\n\n`;
-            
-            if (config.type === 'survey') {
-                const length = document.getElementById(`${id}-length-input`).value;
-                const width = document.getElementById(`${id}-width-input`).value;
-                const area = document.getElementById(`${id}-area-display`).textContent;
-                fileContent += `--- Survey Area ---\nLength: ${length} m\nWidth: ${width} m\nTotal Area: ${area} m²\n\n--- Debris Count & Density ---\n`;
-                fileContent += `Category\t\tCount\t\tDensity (items/m²)\n----------------------------------------------------------\n`;
-                config.categories.forEach(cat => {
-                    const count = document.getElementById(`${id}-${cat.toLowerCase()}-input`).value || 0;
-                    const density = (parseFloat(count) / parseFloat(area)).toFixed(5);
-                    fileContent += `${cat.padEnd(16)}${count}\t\t${density}\n`;
-                });
-            } 
-            else if (config.type === 'lod_loq_check') {
-                const dataStore = lodLoqData;
-                fileContent += `--- Calibration Data ---\n`;
-                fileContent += `Concentration\tInstrument Response\n------------------------------------\n`;
-                dataStore.forEach(p => {
-                    fileContent += `${p.x.toFixed(4)}\t\t${p.y.toFixed(4)}\n`;
-                });
-                
-                fileContent += `\n--- Detection Limit Analysis ---\n`;
-                const { m, syx, rSquared } = regressionParams.lodloq;
-                if (!isNaN(m)) {
-                    fileContent += `R-Squared (R²): ${rSquared.toFixed(5)}\n`;
-                    fileContent += `Linearity Check: ${document.getElementById('lodloq-interpretation-text').textContent}\n\n`;
-                    fileContent += `Slope (m): ${m.toFixed(4)}\n`;
-                    fileContent += `Standard Deviation of Residuals (S_y/x): ${syx.toFixed(4)}\n\n`;
-                     if (rSquared >= 0.99) {
-                         fileContent += `Limit of Detection (LOD): ${document.getElementById('lodloq-lod-text').textContent}\n`;
-                         fileContent += `Limit of Quantitation (LOQ): ${document.getElementById('lodloq-loq-text').textContent}\n`;
-                     } else {
-                         fileContent += `LOD/LOQ not estimated due to poor linearity.\n`;
-                     }
-                } else {
-                    fileContent += `Analysis not performed (not enough data points).\n`;
-                }
-            }
-            else if (config.type === 'calibration_check') {
-                const dataStore = calibrationData;
-                fileContent += `--- Calibration Data ---\n`;
-                fileContent += `Concentration\tInstrument Response\n------------------------------------\n`;
-                dataStore.forEach(p => {
-                    fileContent += `${p.x.toFixed(4)}\t\t${p.y.toFixed(4)}\n`;
-                });
-                
-                fileContent += `\n--- Regression Analysis ---\n`;
-                const { m, c, rSquared } = regressionParams.calibration;
-                if (!isNaN(m)) {
-                    fileContent += `Regression Equation: y = ${m.toFixed(4)}x + ${c.toFixed(4)}\n`;
-                    fileContent += `R-Squared (R²): ${rSquared.toFixed(5)}\n`;
-                    fileContent += `Interpretation: ${document.getElementById('calibration-interpretation-text').textContent}\n`;
-                } else {
-                    fileContent += `Analysis not performed (not enough data points).\n`;
-                }
-
-            }
-            else if (config.type === 'gravimetric') {
-                const initialWeight = document.getElementById(`${id}-initial-weight-input`).value;
-                const finalWeight = document.getElementById(`${id}-final-weight-input`).value;
-                const flowRate = document.getElementById(`${id}-flow-rate-input`).value;
-                const duration = document.getElementById(`${id}-duration-input`).value;
-                const mass = document.getElementById(`${id}-mass-text`).textContent;
-                const volume = document.getElementById(`${id}-volume-text`).textContent;
-                const concentration = document.getElementById(`${id}-result-text`).textContent;
-
-                fileContent += `--- Data ---\n`;
-                fileContent += `Initial Filter Weight: ${initialWeight} mg\n`;
-                fileContent += `Final Filter Weight: ${finalWeight} mg\n`;
-                fileContent += `Average Flow Rate: ${flowRate} m³/min\n`;
-                fileContent += `Sampling Duration: ${duration} hours\n\n`;
-                fileContent += `--- Calculations ---\n`;
-                fileContent += `Total Particulate Mass: ${mass}\n`;
-                fileContent += `Total Air Volume Sampled: ${volume}\n\n`;
-                fileContent += `--- FINAL RESULT ---\n`;
-                fileContent += `Total Suspended Particulates (TSP) Concentration: ${concentration}\n`;
-            }
-            else if (config.type === 'io_ratio') {
-                const indoor = document.getElementById(`${id}-indoor-input`).value;
-                const outdoor = document.getElementById(`${id}-outdoor-input`).value;
-                const ratio = document.getElementById(`${id}-result-text`).textContent;
-                const interpretation = document.getElementById(`${id}-interpretation-text`).textContent;
-
-                fileContent += `--- Data ---\n`;
-                fileContent += `Indoor Reading: ${indoor} ${config.units}\n`;
-                fileContent += `Outdoor Reading: ${outdoor} ${config.units}\n\n`;
-                fileContent += `--- FINAL RESULT ---\n`;
-                fileContent += `I/O Ratio: ${ratio}\n`;
-                fileContent += `Interpretation: ${interpretation}\n`;
-            }
-            else { 
-                const dataStore = (id === 'nitrate') ? nitrateData : sulphateData;
-                fileContent += `--- Calibration Data ---\n`; 
-                if (config.method === 'dual_wavelength') { 
-                    fileContent += `Conc. (${config.units})\tAbs (220nm)\tAbs (275nm)\tCorrected Abs\n----------------------------------------------------------\n`; 
-                    dataStore.forEach(p => { fileContent += `${p.conc.toFixed(2)}\t\t\t${p.abs220.toFixed(4)}\t\t${p.abs275.toFixed(4)}\t\t${p.y.toFixed(4)}\n`; }); 
-                } else { 
-                    fileContent += `Concentration (${config.units})\tAbsorbance\n------------------------------------\n`; 
-                    dataStore.forEach(p => { fileContent += `${p.x.toFixed(2)}\t\t\t\t${p.y.toFixed(4)}\n`; }); 
-                } 
-                fileContent += `\n--- Analysis ---\n`; 
-                const { m, c } = regressionParams[id] || {}; 
-                if (!isNaN(m)) fileContent += `Regression Line: y = ${m.toFixed(4)}x + ${c.toFixed(4)}\n`; 
-                const qaqcOutput = document.getElementById(`${id}-qaqc-output`); 
-                if (qaqcOutput && !qaqcOutput.classList.contains('hidden')) { 
-                    const lod = document.getElementById(`${id}-lod-text`).textContent; 
-                    const loq = document.getElementById(`${id}-loq-text`).textContent; 
-                    fileContent += `Limit of Detection (LOD): ${lod} ${config.units}\n`; 
-                    fileContent += `Limit of Quantitation (LOQ): ${loq} ${config.units}\n`; 
-                } 
-                fileContent += `\n--- FINAL RESULT ---\n`; 
-                const resultOutput = document.getElementById(`${id}-result-output`);
-                const resultText = document.getElementById(`${id}-result-text`).textContent; 
-                if (resultOutput && resultOutput.classList.contains('hidden')) { 
-                    fileContent += `Concentration of Unknown Sample: Not calculated.\n`; 
-                } else { 
-                    fileContent += `Concentration of Unknown Sample: ${resultText}\n`; 
-                } 
-            }
-
-            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${config.id.charAt(0).toUpperCase() + config.id.slice(1)}_Results.txt`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        // --- Initialization ---
-        window.onload = () => {
-            const sectionIds = ['samplingstrategy', 'standardprep', 'calibration', 'lodloq', 'nitrate', 'sulphate', 'tsp', 'macrodebris', 'radiation', 'noise'];
-            sectionIds.forEach(id => {
-                const section = document.getElementById(`${id}-section`);
-                if (section) {
-                    section.innerHTML = generateExperimentHTML(configs[id]);
-                }
-            });
-
-            // Re-initialize charts and event listeners after HTML is generated
-            calibrationChart = createCalibrationChart('calibration');
-            lodLoqChart = createCalibrationChart('lodloq');
-            nitrateChart = createCalibrationChart('nitrate');
-            sulphateChart = createCalibrationChart('sulphate');
-            macrodebrisChart = createSurveyChart('macrodebris');
-
-            const macroLength = document.getElementById('macrodebris-length-input');
-            const macroWidth = document.getElementById('macrodebris-width-input');
-            const macroAreaDisplay = document.getElementById('macrodebris-area-display');
-            if (macroLength && macroWidth && macroAreaDisplay) {
-                const updateArea = () => { macroAreaDisplay.textContent = (parseFloat(macroLength.value) || 0) * (parseFloat(macroWidth.value) || 0); };
-                macroLength.addEventListener('input', updateArea);
-                macroWidth.addEventListener('input', updateArea);
-            }
-            
-            const concentrationUnitSelector = document.getElementById('weigh-concentration-unit');
-            if (concentrationUnitSelector) {
-                concentrationUnitSelector.addEventListener('change', updateWeighingFormula);
-                updateWeighingFormula();
-            }
-            
-            switchTab('samplingstrategy'); // Set default page
-        };
     </script>
 </body>
 </html>
+
 
 
 
